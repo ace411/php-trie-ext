@@ -367,15 +367,11 @@ PHP_MINIT_FUNCTION(php_trie)
       &exception_ce, zend_exception_get_default(TSRMLS_C));
 #endif
 
-  zend_class_implements(phptrie_ce TSRMLS_CC,
-                        2,
-                        zend_ce_arrayaccess,
-                        php_json_serializable_ce);
+#define TRIE_IMPLEMENTS(type) \
+  zend_class_implements(type##_ce TSRMLS_CC, 2, zend_ce_arrayaccess, php_json_serializable_ce);
 
-  zend_class_implements(phphattrie_ce TSRMLS_CC,
-                        2,
-                        zend_ce_arrayaccess,
-                        php_json_serializable_ce);
+  TRIE_IMPLEMENTS(phptrie);
+  TRIE_IMPLEMENTS(phphattrie);
 
   return SUCCESS;
 }
