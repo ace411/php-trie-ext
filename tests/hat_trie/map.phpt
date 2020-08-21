@@ -10,7 +10,9 @@ $trie['baz'] = 3;
 
 var_dump(
   $trie
-    ->map(fn ($x): int => $x ** 2)
+    ->map(function ($x): int {
+      return $x ** 2;
+    })
     ->toArray()
 );
 ?>
