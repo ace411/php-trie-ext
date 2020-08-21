@@ -50,14 +50,17 @@ typedef struct _phphattrie_object
   zend_object std;
 } phphattrie_object;
 
+#define TRIEOBJ_INIT(type, object) \
+  return (type##_object *)((char *)(object)-XtOffsetOf(type##_object, std));
+
 static inline phptrie_object *phptrie_obj_from_obj(zend_object *obj)
 {
-  return (phptrie_object *)((char *)(obj)-XtOffsetOf(phptrie_object, std));
+  TRIEOBJ_INIT(phptrie, obj);
 }
 
 static inline phphattrie_object *phphattrie_obj_from_obj(zend_object *obj)
 {
-  return (phphattrie_object *)((char *)(obj)-XtOffsetOf(phphattrie_object, std));
+  TRIEOBJ_INIT(phphattrie, obj);
 }
 
 #define Z_TRIEOBJ_P(zv) phptrie_obj_from_obj(Z_OBJ_P((zv)))
