@@ -13,7 +13,6 @@
 
 #include <unordered_map>
 #include <utility>
-#include <iostream>
 #include <cstddef>
 #include <string>
 #include <hat-trie/include/tsl/htrie_map.h>
@@ -28,7 +27,8 @@ namespace trie
       isBool,
       isLong,
       isFloat,
-      isNull
+      isNull,
+      isUndefined
     } type;
     union
     {
@@ -192,28 +192,6 @@ namespace trie
     return true;
   }
 
-  void printVal(NodeVal val)
-  {
-    switch (val.type)
-    {
-    case NodeVal::isLong:
-      std::cout << val.lv << std::endl;
-      break;
-
-    case NodeVal::isBool:
-      std::cout << val.bv << std::endl;
-      break;
-
-    case NodeVal::isNull:
-      std::cout << "null" << std::endl;
-      break;
-
-    case NodeVal::isString:
-      std::cout << val.strv << std::endl;
-      break;
-    }
-  }
-
   /**
      * @brief checks if a trie node has children
      * 
@@ -235,33 +213,29 @@ namespace trie
   }
 
   /**
-     * @brief computes the total number of elements in the trie
-     * 
-     * @param trie 
-     * @return int 
-     */
-  int count(TrieNode *&trie)
-  {
-    int acc = 0;
-    for (auto idx : trie->children)
-    {
-      if (idx.second != nullptr)
-      {
-        acc += !hasChildren(idx.second) ? 1 : count(idx.second);
-      }
-    }
-
-    return acc;
-  }
-
+   * @brief extracts the trie's branches into key-value pairs
+   * 
+   * @param trie 
+   * @return triemap 
+   */
   triemap getPairs(TrieNode *&trie)
   {
     triemap res;
 
-    for (auto idx : trie->children)
+    TrieNode *current = trie;
+    for (auto idx : current->children)
     {
       if (idx.second != nullptr)
       {
+        if (idx.second->val.type != NodeVal::isUndefined)
+        {
+          // for the root node
+          if (idx.second->history.size() != 0)
+          {
+            res[idx.second->history] = idx.second->val;
+          }
+        }
+
         if (!hasChildren(idx.second))
         {
           res[idx.second->history] = idx.second->val;
@@ -315,10 +289,11 @@ namespace trie
 
     int size()
     {
-      return count(trie);
+      return getPairs(trie).size();
     }
   };
 
+  // HAT trie type alias
   typedef tsl::htrie_map<char, NodeVal> Htrie;
   class HatTrie
   {
