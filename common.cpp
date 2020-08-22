@@ -154,6 +154,27 @@ static void phphattrie_object_free(zend_object *object)
   TRIE_OBJECT_FREE(hat, phphattrie, object);
 }
 
+// macro to convert Trie branch to hashtable entry
+#define TRIE_TO_ARRAY(retval, key, value)                   \
+  switch (value.type)                                             \
+  {                                                         \
+  case NodeVal::isString:                                   \
+    add_assoc_string(&retval, key.c_str(), value.strv);     \
+    break;                                                  \
+  case NodeVal::isLong:                                     \
+    add_assoc_long(&retval, key.c_str(), value.lv);         \
+    break;                                                  \
+  case NodeVal::isFloat:                                    \
+    add_assoc_double(&retval, key.c_str(), value.fv);       \
+    break;                                                  \
+  case NodeVal::isBool:                                     \
+    add_assoc_bool(&retval, key.c_str(), value.bv ? 1 : 0); \
+    break;                                                  \
+  case NodeVal::isNull:                                     \
+    add_assoc_null(&retval, key.c_str());                   \
+    break;                                                  \
+  }
+
 /* ---- common routines ----- */
 
 /**
@@ -653,28 +674,7 @@ static void trieToArray(INTERNAL_FUNCTION_PARAMETERS)
     data = trie->trie->all();
     for (auto idx : data)
     {
-      switch (idx.second.type)
-      {
-      case NodeVal::isString:
-        add_assoc_string(&retval, idx.first.c_str(), idx.second.strv);
-        break;
-
-      case NodeVal::isBool:
-        add_assoc_bool(&retval, idx.first.c_str(), idx.second.bv);
-        break;
-
-      case NodeVal::isLong:
-        add_assoc_long(&retval, idx.first.c_str(), idx.second.lv);
-        break;
-
-      case NodeVal::isFloat:
-        add_assoc_double(&retval, idx.first.c_str(), idx.second.fv);
-        break;
-
-      case NodeVal::isNull:
-        add_assoc_null(&retval, idx.first.c_str());
-        break;
-      }
+      TRIE_TO_ARRAY(retval, idx.first, idx.second);
     }
 
     RETURN_ZVAL(&retval, 1, 0);
@@ -750,28 +750,7 @@ static void hatToArray(INTERNAL_FUNCTION_PARAMETERS)
     for (auto idx = data.begin(); idx != data.end(); ++idx)
     {
       idx.key(buffer);
-      switch (idx.value().type)
-      {
-      case NodeVal::isString:
-        add_assoc_string(&retval, buffer.c_str(), idx.value().strv);
-        break;
-
-      case NodeVal::isBool:
-        add_assoc_bool(&retval, buffer.c_str(), idx.value().bv);
-        break;
-
-      case NodeVal::isLong:
-        add_assoc_long(&retval, buffer.c_str(), idx.value().lv);
-        break;
-
-      case NodeVal::isFloat:
-        add_assoc_double(&retval, buffer.c_str(), idx.value().fv);
-        break;
-
-      case NodeVal::isNull:
-        add_assoc_null(&retval, buffer.c_str());
-        break;
-      }
+      TRIE_TO_ARRAY(retval, buffer, idx.value());
     }
 
     RETURN_ZVAL(&retval, 1, 0);
@@ -1125,28 +1104,7 @@ static void hatLongestPrefix(INTERNAL_FUNCTION_PARAMETERS)
     auto longest = hat->hat->longestPrefix(ZSTR_VAL(prefix));
     if (longest != hat->hat->all().end())
     {
-      switch (longest.value().type)
-      {
-      case NodeVal::isString:
-        add_assoc_string(&retval, longest.key().c_str(), longest.value().strv);
-        break;
-
-      case NodeVal::isBool:
-        add_assoc_bool(&retval, longest.key().c_str(), longest.value().bv);
-        break;
-
-      case NodeVal::isLong:
-        add_assoc_long(&retval, longest.key().c_str(), longest.value().lv);
-        break;
-
-      case NodeVal::isFloat:
-        add_assoc_double(&retval, longest.key().c_str(), longest.value().fv);
-        break;
-
-      case NodeVal::isNull:
-        add_assoc_null(&retval, longest.key().c_str());
-        break;
-      }
+      TRIE_TO_ARRAY(retval, longest.key(), longest.value());
     }
     RETURN_ZVAL(&retval, 1, 0);
   }
