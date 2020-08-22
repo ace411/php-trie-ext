@@ -105,6 +105,7 @@ class HatTrie implements ArrayAccess, JsonSerializable {
   public keyExists|offsetExists( string $key ) : bool;
   public search|offsetGet( string $key ) : mixed;
   public prefixSearch( string $prefix ) : HatTrie;
+  public longestPrefix( string $prefix ) : array;
   public prefixErase( string $prefix ) : HatTrie;
   public map( callable $function ) : HatTrie;
   public filter( callable $predicate ) : HatTrie;
@@ -125,6 +126,8 @@ class HatTrie implements ArrayAccess, JsonSerializable {
 **`HatTrie::prefixSearch`** - Returns a new HAT trie containing values that have a common arbitrary prefix
 
 **`HatTrie::prefixErase`** - Erases all entries whose keys have a common arbitrary prefix
+
+**`HatTrie::longestPrefix`** - Computes the longest match prefix and outputs the result as a hashtable
 
 ## Contributing
 

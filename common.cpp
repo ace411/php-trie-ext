@@ -1095,3 +1095,61 @@ static void hatFilter(INTERNAL_FUNCTION_PARAMETERS)
     RETURN_OBJ(Z_OBJ_P(obj));
   }
 }
+
+/**
+ * @brief PHP HAT trie longestPrefix function
+ * 
+ */
+static void hatLongestPrefix(INTERNAL_FUNCTION_PARAMETERS)
+{
+  zend_string *prefix;
+
+  zval *obj = getThis();
+  phphattrie_object *hat;
+
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+  Z_PARAM_STR(prefix)
+  ZEND_PARSE_PARAMETERS_END();
+
+  if (ZSTR_LEN(prefix) == 0)
+  {
+    TRIE_THROW("Prefix cannot be empty");
+  }
+
+  hat = Z_HATOBJ_P(obj);
+  if (hat != NULL)
+  {
+    zval retval;
+    array_init(&retval);
+
+    auto longest = hat->hat->longestPrefix(ZSTR_VAL(prefix));
+    if (longest != hat->hat->all().end())
+    {
+      switch (longest.value().type)
+      {
+      case NodeVal::isString:
+        add_assoc_string(&retval, longest.key().c_str(), longest.value().strv);
+        break;
+
+      case NodeVal::isBool:
+        add_assoc_bool(&retval, longest.key().c_str(), longest.value().bv);
+        break;
+
+      case NodeVal::isLong:
+        add_assoc_long(&retval, longest.key().c_str(), longest.value().lv);
+        break;
+
+      case NodeVal::isFloat:
+        add_assoc_double(&retval, longest.key().c_str(), longest.value().fv);
+        break;
+
+      case NodeVal::isNull:
+        add_assoc_null(&retval, longest.key().c_str());
+        break;
+      }
+    }
+    RETURN_ZVAL(&retval, 1, 0);
+  }
+
+  zend_string_release(prefix);
+}

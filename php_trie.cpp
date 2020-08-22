@@ -253,6 +253,14 @@ PHP_METHOD(HatTrie, size)
   trieCount(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
 }
 
+/* {{{ proto array longestPrefix(string prefix)
+ */
+PHP_METHOD(HatTrie, longestPrefix)
+{
+  hatLongestPrefix(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+/* }}} */
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_insert, 0, 0, 2)
 ZEND_ARG_INFO(0, key)
 ZEND_ARG_INFO(0, entry)
@@ -287,14 +295,15 @@ static const zend_function_entry hattrie_methods[] = {
                                     PHP_ME(HatTrie, erase, arginfo_onlykey, ZEND_ACC_PUBLIC)
                                         PHP_ME(HatTrie, prefixSearch, arginfo_onlykey, ZEND_ACC_PUBLIC)
                                             PHP_ME(HatTrie, prefixErase, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                                PHP_ME(HatTrie, map, arginfo_onlycallable, ZEND_ACC_PUBLIC)
-                                                    PHP_ME(HatTrie, offsetSet, arginfo_insert, ZEND_ACC_PUBLIC)
-                                                        PHP_ME(HatTrie, offsetGet, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                                            PHP_ME(HatTrie, offsetExists, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                                                PHP_ME(HatTrie, offsetUnset, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                                                    PHP_ME(HatTrie, toArray, NULL, ZEND_ACC_PUBLIC)
-                                                                        PHP_ME(HatTrie, jsonSerialize, NULL, ZEND_ACC_PUBLIC)
-                                                                            PHP_FE_END};
+                                                PHP_ME(HatTrie, longestPrefix, arginfo_onlykey, ZEND_ACC_PUBLIC)
+                                                    PHP_ME(HatTrie, map, arginfo_onlycallable, ZEND_ACC_PUBLIC)
+                                                        PHP_ME(HatTrie, offsetSet, arginfo_insert, ZEND_ACC_PUBLIC)
+                                                            PHP_ME(HatTrie, offsetGet, arginfo_onlykey, ZEND_ACC_PUBLIC)
+                                                                PHP_ME(HatTrie, offsetExists, arginfo_onlykey, ZEND_ACC_PUBLIC)
+                                                                    PHP_ME(HatTrie, offsetUnset, arginfo_onlykey, ZEND_ACC_PUBLIC)
+                                                                        PHP_ME(HatTrie, toArray, NULL, ZEND_ACC_PUBLIC)
+                                                                            PHP_ME(HatTrie, jsonSerialize, NULL, ZEND_ACC_PUBLIC)
+                                                                                PHP_FE_END};
 
 static const zend_function_entry trie_methods[] = {
     PHP_ME(Trie, __construct, NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)

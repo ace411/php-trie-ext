@@ -346,8 +346,12 @@ namespace trie
     {
       return hatTrie.erase_prefix(prefix);
     }
-  };
 
+    Htrie::iterator longestPrefix(const char *prefix)
+    {
+      return hatTrie.longest_prefix(prefix);
+    }
+  };
 }; // namespace trie
 
 #endif // TRIE_H
