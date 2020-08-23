@@ -299,9 +299,14 @@ namespace trie
   {
   private:
     Htrie hatTrie;
+    float loadFactor = 8.0f;
 
   public:
-    HatTrie() {}
+    // HatTrie() {}
+    HatTrie(float factor = 8.0f) : loadFactor(factor)
+    {
+      hatTrie.max_load_factor(factor);
+    }
     HatTrie(Htrie hat) : hatTrie(hat) {}
     ~HatTrie()
     {
@@ -350,6 +355,11 @@ namespace trie
     Htrie::iterator longestPrefix(const char *prefix)
     {
       return hatTrie.longest_prefix(prefix);
+    }
+
+    void shrinkTrie()
+    {
+      hatTrie.shrink_to_fit();
     }
   };
 }; // namespace trie

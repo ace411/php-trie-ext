@@ -47,6 +47,8 @@ typedef struct _phptrie_object
 typedef struct _phphattrie_object
 {
   HatTrie *hat;
+  float loadFactor;
+  bool shrink;
   zend_object std;
 } phphattrie_object;
 
@@ -231,50 +233,6 @@ static void phphattrie_object_free(zend_object *object)
 /* ---- common routines ----- */
 
 /**
- * @brief PHP trie/HAT trie object constructor
- * 
- * @param type 
- */
-static void trieConstruct(INTERNAL_FUNCTION_PARAMETERS, long type)
-{
-  zval *obj = getThis();
-  phptrie_object *trie;
-  phphattrie_object *hat;
-
-  ZEND_PARSE_PARAMETERS_NONE();
-
-  switch (type)
-  {
-  case IS_HATTRIE:
-    hat = Z_HATOBJ_P(obj);
-    break;
-
-  case IS_TRIE:
-    trie = Z_TRIEOBJ_P(obj);
-    break;
-  }
-
-  if (trie != NULL || hat != NULL)
-  {
-    switch (type)
-    {
-    case IS_HATTRIE:
-#ifndef TSL_HTRIE_MAP_H
-      zend_throw_exception(phptrie_exception_ce,
-                           "You do not have Tessil/hat-trie installed",
-                           0 TSRMLS_CC);
-#endif
-      hat->hat = new HatTrie();
-      break;
-
-    case IS_TRIE:
-      trie->trie = new Trie();
-      break;
-    }
-  }
-}
-
-/**
  * @brief PHP trie/HAT trie insert function
  * 
  * @param type 
@@ -355,6 +313,10 @@ static void trieInsert(INTERNAL_FUNCTION_PARAMETERS, long type)
     {
     case IS_HATTRIE:
       ret = hat->hat->insert(ZSTR_VAL(key), ins);
+      if (hat->shrink)
+      {
+        hat->hat->shrinkTrie();
+      }
       break;
 
     case IS_TRIE:
@@ -534,6 +496,10 @@ static void trieKeyDelete(INTERNAL_FUNCTION_PARAMETERS, long type)
     {
     case IS_HATTRIE:
       deleted = hat->hat->remove(ZSTR_VAL(key));
+      if (hat->shrink)
+      {
+        hat->hat->shrinkTrie();
+      }
       break;
 
     case IS_TRIE:
@@ -589,86 +555,27 @@ static void trieCount(INTERNAL_FUNCTION_PARAMETERS, long type)
   }
 }
 
+/* ---- Trie routines ----- */
+
 /**
- * @brief PHP trie/HAT trie fromArray static function
+ * @brief PHP trie/HAT trie object constructor
  * 
  * @param type 
  */
-static void trieFromArray(INTERNAL_FUNCTION_PARAMETERS, long type)
+static void trieConstruct(INTERNAL_FUNCTION_PARAMETERS)
 {
-  zval *array, *hashVal;
-  zend_string *hashKey;
-
-  phphattrie_object *hat;
+  zval *obj = getThis();
   phptrie_object *trie;
 
-  HatTrie *initHat;
-  Trie *initTrie;
+  ZEND_PARSE_PARAMETERS_NONE();
 
-  ZEND_PARSE_PARAMETERS_START(1, 1)
-  Z_PARAM_ARRAY(array)
-  ZEND_PARSE_PARAMETERS_END();
+  trie = Z_TRIEOBJ_P(obj);
 
-  if (zend_hash_num_elements(Z_ARRVAL_P(array)) == 0)
+  if (trie != NULL)
   {
-    TRIE_THROW("Sorry, array cannot be empty");
-  }
-
-  switch (type)
-  {
-  case IS_HATTRIE:
-#ifndef TSL_HTRIE_MAP_H
-    TRIE_THROW("You do not have Tessil/hat-trie installed");
-#endif
-    initHat = new HatTrie();
-    break;
-
-  case IS_TRIE:
-    initTrie = new Trie();
-    break;
-  }
-
-  ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(array), hashKey, hashVal)
-  {
-    NodeVal ins;
-
-    zval dup;
-    ZVAL_COPY(&dup, hashVal);
-
-    ZVAL_TO_TRIE_NODE(dup, ins);
-
-    switch (type)
-    {
-    case IS_HATTRIE:
-      initHat->insert(ZSTR_VAL(hashKey), ins);
-      break;
-
-    case IS_TRIE:
-      initTrie->insert(ZSTR_VAL(hashKey), ins);
-      break;
-    }
-  }
-  ZEND_HASH_FOREACH_END();
-
-  switch (type)
-  {
-  case IS_HATTRIE:
-    object_init_ex(return_value, phphattrie_ce);
-
-    hat = Z_HATOBJ_P(return_value);
-    hat->hat = initHat;
-    break;
-
-  case IS_TRIE:
-    object_init_ex(return_value, phptrie_ce);
-
-    trie = Z_TRIEOBJ_P(return_value);
-    trie->trie = initTrie;
-    break;
+    trie->trie = new Trie();
   }
 }
-
-/* ---- Trie routines ----- */
 
 /**
  * @brief PHP trie toArray function
@@ -699,7 +606,140 @@ static void trieToArray(INTERNAL_FUNCTION_PARAMETERS)
   }
 }
 
+/**
+ * @brief PHP trie fromArray static function
+ * 
+ * @param type 
+ */
+static void trieFromArray(INTERNAL_FUNCTION_PARAMETERS)
+{
+  zval *array, *hashVal;
+  zend_string *hashKey;
+
+  zval *obj = getThis();
+  phptrie_object *trie;
+
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+  Z_PARAM_ARRAY(array)
+  ZEND_PARSE_PARAMETERS_END();
+
+  if (zend_hash_num_elements(Z_ARRVAL_P(array)) == 0)
+  {
+    TRIE_THROW("Array cannot be empty");
+  }
+
+  Trie *dest = new Trie();
+  ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(array), hashKey, hashVal)
+  {
+    NodeVal ins;
+    zval dup;
+
+    ZVAL_COPY(&dup, hashVal);
+    ZVAL_TO_TRIE_NODE(dup, ins);
+
+    dest->insert(ZSTR_VAL(hashKey), ins);
+  }
+  ZEND_HASH_FOREACH_END();
+
+  object_init_ex(return_value, phptrie_ce);
+  trie = Z_TRIEOBJ_P(return_value);
+  trie->trie = dest;
+}
+
 /* ---- HAT trie routines ----- */
+
+/**
+ * @brief PHP HAT trie constructor
+ * 
+ */
+static void hatConstruct(INTERNAL_FUNCTION_PARAMETERS)
+{
+  double factor = 8.0;
+  zend_bool shrink = 0;
+
+  zval *obj = getThis();
+  phphattrie_object *hat;
+
+  ZEND_PARSE_PARAMETERS_START(0, 2)
+  Z_PARAM_OPTIONAL
+  Z_PARAM_DOUBLE(factor)
+  Z_PARAM_OPTIONAL
+  Z_PARAM_BOOL(shrink)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifndef TSL_HTRIE_MAP_H
+  TRIE_THROW("You do not have Tessil/hat-trie installed");
+#endif
+
+  hat = Z_HATOBJ_P(obj);
+  if (hat != NULL)
+  {
+    hat->loadFactor = (float)factor;
+    hat->shrink = shrink == 1 ? true : false;
+    hat->hat = new HatTrie(hat->loadFactor);
+  }
+}
+
+/**
+ * @brief PHP HAT trie fromArray static function
+ * 
+ * @param type 
+ */
+static void hatFromArray(INTERNAL_FUNCTION_PARAMETERS)
+{
+  zval *array, *hashVal;
+  zend_string *hashKey;
+
+  zend_bool shrink = 0;
+  double factor = 8.0;
+
+  zval *obj = getThis();
+  phphattrie_object *hat;
+
+  ZEND_PARSE_PARAMETERS_START(1, 3)
+  Z_PARAM_ARRAY(array)
+  Z_PARAM_OPTIONAL
+  Z_PARAM_DOUBLE(factor)
+  Z_PARAM_OPTIONAL
+  Z_PARAM_BOOL(shrink)
+  ZEND_PARSE_PARAMETERS_END();
+
+#ifndef TSL_HTRIE_MAP_H
+  TRIE_THROW("You do not have Tessil/hat-trie installed");
+#endif
+
+  if (zend_hash_num_elements(Z_ARRVAL_P(array)) == 0)
+  {
+    TRIE_THROW("Array cannot be empty");
+  }
+
+  auto dest = new HatTrie((float)factor);
+
+  ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(array), hashKey, hashVal)
+  {
+    NodeVal ins;
+    zval dup;
+
+    ZVAL_COPY(&dup, hashVal);
+    ZVAL_TO_TRIE_NODE(dup, ins);
+
+    dest->insert(ZSTR_VAL(hashKey), ins);
+  }
+  ZEND_HASH_FOREACH_END();
+
+  if (shrink == 1)
+  {
+    dest->shrinkTrie();
+  }
+
+  object_init_ex(return_value, phphattrie_ce);
+  hat = Z_HATOBJ_P(return_value);
+
+  hat->shrink = shrink == 1 ? true : false;
+  hat->loadFactor = (float)factor;
+
+  hat->hat = dest;
+}
 
 /**
  * @brief PHP HAT trie prefixSearch function
@@ -728,13 +768,18 @@ static void hatPrefixSearch(INTERNAL_FUNCTION_PARAMETERS)
   hat = Z_HATOBJ_P(obj);
   if (hat != NULL)
   {
-    hattrie = new HatTrie;
+    hattrie = new HatTrie(hat->loadFactor);
     data = hat->hat->all();
     auto results = data.equal_prefix_range(ZSTR_VAL(prefix));
 
     for (auto idx = results.first; idx != results.second; ++idx)
     {
       hattrie->insert(idx.key().c_str(), idx.value());
+    }
+
+    if (hat->shrink)
+    {
+      hattrie->shrinkTrie();
     }
 
     hat->hat = hattrie;
@@ -799,6 +844,11 @@ static void hatPrefixErase(INTERNAL_FUNCTION_PARAMETERS)
   if (hat != NULL)
   {
     hat->hat->prefixDelete(ZSTR_VAL(prefix));
+
+    if (hat->shrink)
+    {
+      hat->hat->shrinkTrie();
+    }
 
     RETURN_OBJ(Z_OBJ_P(obj));
   }
@@ -893,7 +943,7 @@ static void hatMap(INTERNAL_FUNCTION_PARAMETERS)
   if (hat != NULL)
   {
     htrie = hat->hat->all();
-    hattrie = new HatTrie;
+    hattrie = new HatTrie(hat->loadFactor);
 
     std::string buffer;
 
@@ -924,6 +974,11 @@ static void hatMap(INTERNAL_FUNCTION_PARAMETERS)
       hattrie->insert(buffer.c_str(), ins);
     }
     zend_release_fcall_info_cache(&fci_cache);
+
+    if (hat->shrink)
+    {
+      hattrie->shrinkTrie();
+    }
 
     hat->hat = hattrie;
     RETURN_OBJ(Z_OBJ_P(obj));
@@ -991,6 +1046,11 @@ static void hatFilter(INTERNAL_FUNCTION_PARAMETERS)
       }
     }
     zend_release_fcall_info_cache(&fci_cache);
+
+    if (hat->shrink)
+    {
+      hat->hat->shrinkTrie();
+    }
 
     RETURN_OBJ(Z_OBJ_P(obj));
   }

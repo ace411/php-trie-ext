@@ -13,7 +13,7 @@
  */
 PHP_METHOD(Trie, __construct)
 {
-  trieConstruct(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
+  trieConstruct(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 /* }}} */
 
@@ -37,7 +37,7 @@ PHP_METHOD(Trie, keyExists)
  */
 PHP_METHOD(Trie, fromArray)
 {
-  trieFromArray(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
+  trieFromArray(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 /* }}} */
 
@@ -116,7 +116,7 @@ PHP_METHOD(Trie, jsonSerialize)
  */
 PHP_METHOD(HatTrie, __construct)
 {
-  trieConstruct(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
+  hatConstruct(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 /* }}} */
 
@@ -164,7 +164,7 @@ PHP_METHOD(HatTrie, keyExists)
  */
 PHP_METHOD(HatTrie, fromArray)
 {
-  trieFromArray(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
+  hatFromArray(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 /* }}} */
 
@@ -261,6 +261,17 @@ PHP_METHOD(HatTrie, longestPrefix)
 }
 /* }}} */
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_hatconstruct, 0, 0, 2)
+ZEND_ARG_INFO(0, loadFactor)
+ZEND_ARG_INFO(0, shrink)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_hatfromarray, 0, 0, 3)
+ZEND_ARG_ARRAY_INFO(0, array, 0)
+ZEND_ARG_INFO(0, loadFactor)
+ZEND_ARG_INFO(0, shrink)
+ZEND_END_ARG_INFO();
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_insert, 0, 0, 2)
 ZEND_ARG_INFO(0, key)
 ZEND_ARG_INFO(0, entry)
@@ -284,8 +295,8 @@ ZEND_ARG_INFO(0, accumulator)
 ZEND_END_ARG_INFO();
 
 static const zend_function_entry hattrie_methods[] = {
-    PHP_ME(HatTrie, __construct, NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-        PHP_ME(HatTrie, fromArray, arginfo_onlyhash, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(HatTrie, __construct, arginfo_hatconstruct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+        PHP_ME(HatTrie, fromArray, arginfo_hatfromarray, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
             PHP_ME(HatTrie, fold, arginfo_fold, ZEND_ACC_PUBLIC)
                 PHP_ME(HatTrie, size, NULL, ZEND_ACC_PUBLIC)
                     PHP_ME(HatTrie, filter, arginfo_onlycallable, ZEND_ACC_PUBLIC)
@@ -367,6 +378,10 @@ PHP_MINIT_FUNCTION(php_trie)
 
   TRIE_OBJECT_REGISTER(phptrie, ce);
   TRIE_OBJECT_REGISTER(phphattrie, hat_ce);
+
+  zend_declare_class_constant_bool(phphattrie_ce, "SHRINK", sizeof("SHRINK") - 1, 1);
+  zend_declare_class_constant_bool(phphattrie_ce, "NO_SHRINK", sizeof("NO_SHRINK") - 1, 0);
+  zend_declare_class_constant_double(phphattrie_ce, "DEFAULT_LOAD_FACTOR", sizeof("DEFAULT_LOAD_FACTOR") - 1, 8.0);
 
 #ifdef HAVE_SPL
   phptrie_exception_ce = zend_register_internal_class_ex(

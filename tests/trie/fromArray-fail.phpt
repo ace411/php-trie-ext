@@ -9,4 +9,4 @@ try {
 }
 ?>
 --EXPECT--
-Sorry, array cannot be empty
+Array cannot be empty

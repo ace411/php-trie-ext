@@ -97,9 +97,14 @@ class Trie implements ArrayAccess, JsonSerializable {
 ```php
 class HatTrie implements ArrayAccess, JsonSerializable {
 
+  /* Constants */
+  const bool SHRINK = true;
+  const bool NO_SHRINK = false;
+  const double DEFAULT_LOAD_FACTOR = 8.0;
+
   /* Methods */
-  public __construct();
-  public static fromArray( array $array ) : HatTrie;
+  public __construct( double $loadFactor = HatTrie::DEFAULT_LOAD_FACTOR [, bool $shrink = HatTrie::NO_SHRINK ] );
+  public static fromArray( array $array [, double $loadFactor = HatTrie::DEFAULT_LOAD_FACTOR [, bool $shrink = HatTrie::NO_SHRINK ]] ) : HatTrie;
   public insert|offsetSet( string $key [, mixed $entry ] ) : bool;
   public erase|offsetUnset( string $key ) : void;
   public keyExists|offsetExists( string $key ) : bool;
