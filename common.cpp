@@ -156,7 +156,7 @@ static void phphattrie_object_free(zend_object *object)
 
 // macro to convert Trie branch to hashtable entry
 #define TRIE_TO_ARRAY(retval, key, value)                   \
-  switch (value.type)                                             \
+  switch (value.type)                                       \
   {                                                         \
   case NodeVal::isString:                                   \
     add_assoc_string(&retval, key.c_str(), value.strv);     \
@@ -173,6 +173,59 @@ static void phphattrie_object_free(zend_object *object)
   case NodeVal::isNull:                                     \
     add_assoc_null(&retval, key.c_str());                   \
     break;                                                  \
+  }
+
+// macro to copy trie content to zval
+#define TRIE_NODE_TO_ZVAL(tmp, value) \
+  switch (value.type)                 \
+  {                                   \
+  case NodeVal::isString:             \
+    ZVAL_STRING(&tmp, value.strv);    \
+    break;                            \
+  case NodeVal::isLong:               \
+    ZVAL_LONG(&tmp, value.lv);        \
+    break;                            \
+  case NodeVal::isBool:               \
+    ZVAL_BOOL(&tmp, value.bv);        \
+    break;                            \
+  case NodeVal::isFloat:              \
+    ZVAL_DOUBLE(&tmp, value.fv);      \
+    break;                            \
+  case NodeVal::isNull:               \
+    ZVAL_NULL(&tmp);                  \
+    break;                            \
+  }
+
+// macro to create trie node from zval
+#define ZVAL_TO_TRIE_NODE(zval, node) \
+  switch (Z_TYPE(zval))               \
+  {                                   \
+  case IS_STRING:                     \
+    node.type = NodeVal::isString;    \
+    node.strv = Z_STRVAL(zval);       \
+    break;                            \
+  case IS_LONG:                       \
+    node.type = NodeVal::isLong;      \
+    node.lv = Z_LVAL(zval);           \
+    break;                            \
+  case IS_DOUBLE:                     \
+    node.type = NodeVal::isFloat;     \
+    node.fv = Z_DVAL(zval);           \
+    break;                            \
+  case IS_NULL:                       \
+    node.type = NodeVal::isNull;      \
+    node.nullv = nullptr;             \
+    break;                            \
+  case IS_TRUE:                       \
+    node.type = NodeVal::isBool;      \
+    node.bv = true;                   \
+    break;                            \
+  case IS_FALSE:                      \
+    node.type = NodeVal::isBool;      \
+    node.bv = false;                  \
+    break;                            \
+  default:                            \
+    continue;                         \
   }
 
 /* ---- common routines ----- */
@@ -582,42 +635,7 @@ static void trieFromArray(INTERNAL_FUNCTION_PARAMETERS, long type)
     zval dup;
     ZVAL_COPY(&dup, hashVal);
 
-    switch (Z_TYPE(dup))
-    {
-    case IS_STRING:
-      ins.type = NodeVal::isString;
-      ins.strv = Z_STRVAL(dup);
-      break;
-
-    case IS_LONG:
-      ins.type = NodeVal::isLong;
-      ins.lv = Z_LVAL(dup);
-      break;
-
-    case IS_DOUBLE:
-      ins.type = NodeVal::isFloat;
-      ins.fv = Z_DVAL(dup);
-      break;
-
-    case IS_NULL:
-      ins.type = NodeVal::isNull;
-      ins.nullv = nullptr;
-      break;
-
-    case IS_TRUE:
-      ins.type = NodeVal::isBool;
-      ins.bv = true;
-      break;
-
-    case IS_FALSE:
-      ins.type = NodeVal::isBool;
-      ins.bv = false;
-      break;
-
-    // skip over everything else
-    default:
-      continue;
-    }
+    ZVAL_TO_TRIE_NODE(dup, ins);
 
     switch (type)
     {
@@ -817,7 +835,6 @@ static void hatFold(INTERNAL_FUNCTION_PARAMETERS)
     fci.param_count = 2;
 
     data = hat->hat->all();
-    // std::string buffer;
 
     if (hat->hat->size() == 0)
     {
@@ -826,30 +843,8 @@ static void hatFold(INTERNAL_FUNCTION_PARAMETERS)
 
     for (auto idx = data.begin(); idx != data.end(); ++idx)
     {
-      // idx.key(buffer);
       zval temp;
-      switch (idx.value().type)
-      {
-      case NodeVal::isString:
-        ZVAL_STRING(&temp, idx.value().strv);
-        break;
-
-      case NodeVal::isLong:
-        ZVAL_LONG(&temp, idx.value().lv);
-        break;
-
-      case NodeVal::isBool:
-        ZVAL_BOOL(&temp, idx.value().bv);
-        break;
-
-      case NodeVal::isFloat:
-        ZVAL_DOUBLE(&temp, idx.value().fv);
-        break;
-
-      case NodeVal::isNull:
-        ZVAL_NULL(&temp);
-        break;
-      }
+      TRIE_NODE_TO_ZVAL(temp, idx.value());
 
       ZVAL_COPY_VALUE(&args[0], return_value);
       ZVAL_COPY(&args[1], &temp);
@@ -909,28 +904,7 @@ static void hatMap(INTERNAL_FUNCTION_PARAMETERS)
 
       // bind NodeVal to zval stored in temp variable
       zval temp;
-      switch (idx.value().type)
-      {
-      case NodeVal::isString:
-        ZVAL_STRING(&temp, idx.value().strv);
-        break;
-
-      case NodeVal::isLong:
-        ZVAL_LONG(&temp, idx.value().lv);
-        break;
-
-      case NodeVal::isBool:
-        ZVAL_BOOL(&temp, idx.value().bv);
-        break;
-
-      case NodeVal::isFloat:
-        ZVAL_DOUBLE(&temp, idx.value().fv);
-        break;
-
-      case NodeVal::isNull:
-        ZVAL_NULL(&temp);
-        break;
-      }
+      TRIE_NODE_TO_ZVAL(temp, idx.value());
 
       fci.retval = &result;
       fci.param_count = 1;
@@ -946,39 +920,7 @@ static void hatMap(INTERNAL_FUNCTION_PARAMETERS)
       i_zval_ptr_dtor(&arg);
       // i_zval_ptr_dtor(&temp);
 
-      switch (Z_TYPE(result))
-      {
-      case IS_STRING:
-        ins.type = NodeVal::isString;
-        ins.strv = Z_STRVAL(result);
-        break;
-
-      case IS_LONG:
-        ins.type = NodeVal::isLong;
-        ins.lv = Z_LVAL(result);
-        break;
-
-      case IS_DOUBLE:
-        ins.type = NodeVal::isFloat;
-        ins.fv = Z_DVAL(result);
-        break;
-
-      case IS_NULL:
-        ins.type = NodeVal::isNull;
-        ins.nullv = nullptr;
-        break;
-
-      case IS_TRUE:
-        ins.type = NodeVal::isBool;
-        ins.bv = true;
-        break;
-
-      case IS_FALSE:
-        ins.type = NodeVal::isBool;
-        ins.bv = false;
-        break;
-      }
-
+      ZVAL_TO_TRIE_NODE(result, ins);
       hattrie->insert(buffer.c_str(), ins);
     }
     zend_release_fcall_info_cache(&fci_cache);
@@ -1018,28 +960,7 @@ static void hatFilter(INTERNAL_FUNCTION_PARAMETERS)
       idx.key(buffer);
 
       zval temp;
-      switch (idx.value().type)
-      {
-      case NodeVal::isString:
-        ZVAL_STRING(&temp, idx.value().strv);
-        break;
-
-      case NodeVal::isLong:
-        ZVAL_LONG(&temp, idx.value().lv);
-        break;
-
-      case NodeVal::isBool:
-        ZVAL_BOOL(&temp, idx.value().bv);
-        break;
-
-      case NodeVal::isFloat:
-        ZVAL_DOUBLE(&temp, idx.value().fv);
-        break;
-
-      case NodeVal::isNull:
-        ZVAL_NULL(&temp);
-        break;
-      }
+      TRIE_NODE_TO_ZVAL(temp, idx.value());
 
       fci.retval = &result;
       fci.param_count = 1;
