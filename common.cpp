@@ -156,6 +156,24 @@ static void phphattrie_object_free(zend_object *object)
   TRIE_OBJECT_FREE(hat, phphattrie, object);
 }
 
+static int phphattrie_count_elements(zval *obj, zend_long *count)
+{
+  phphattrie_object *hat;
+  hat = Z_HATOBJ_P(obj);
+
+  *count = hat->hat->size();
+  return SUCCESS;
+}
+
+static int phptrie_count_elements(zval *obj, zend_long *count)
+{
+  phptrie_object *trie;
+  trie = Z_TRIEOBJ_P(obj);
+
+  *count = trie->trie->size();
+  return SUCCESS;
+}
+
 // macro to convert Trie branch to hashtable entry
 #define TRIE_TO_ARRAY(retval, key, value)                   \
   switch (value.type)                                       \

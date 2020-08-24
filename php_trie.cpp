@@ -379,6 +379,9 @@ PHP_MINIT_FUNCTION(php_trie)
   TRIE_OBJECT_REGISTER(phptrie, ce);
   TRIE_OBJECT_REGISTER(phphattrie, hat_ce);
 
+  phptrie_object_handlers.count_elements = phptrie_count_elements;
+  phphattrie_object_handlers.count_elements = phphattrie_count_elements;
+
   zend_declare_class_constant_bool(phphattrie_ce, "SHRINK", sizeof("SHRINK") - 1, 1);
   zend_declare_class_constant_bool(phphattrie_ce, "NO_SHRINK", sizeof("NO_SHRINK") - 1, 0);
   zend_declare_class_constant_double(phphattrie_ce, "DEFAULT_LOAD_FACTOR", sizeof("DEFAULT_LOAD_FACTOR") - 1, 8.0);

@@ -64,7 +64,7 @@ unset($trie['bar']);
 ### Trie object
 
 ```php
-class Trie implements ArrayAccess, JsonSerializable {
+class Trie implements Countable, ArrayAccess, JsonSerializable {
 
   /* Methods */
   public __construct();
@@ -95,7 +95,7 @@ class Trie implements ArrayAccess, JsonSerializable {
 ### HatTrie object
 
 ```php
-class HatTrie implements ArrayAccess, JsonSerializable {
+class HatTrie implements Countable, ArrayAccess, JsonSerializable {
 
   /* Constants */
   const bool SHRINK = true;
