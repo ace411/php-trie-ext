@@ -261,6 +261,11 @@ PHP_METHOD(HatTrie, longestPrefix)
 }
 /* }}} */
 
+#define ARGINFO_KEYONLY(key)                         \
+  ZEND_BEGIN_ARG_INFO_EX(arginfo_only##key, 0, 0, 1) \
+  ZEND_ARG_INFO(0, key)                              \
+  ZEND_END_ARG_INFO();
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_hatconstruct, 0, 0, 2)
 ZEND_ARG_INFO(0, loadFactor)
 ZEND_ARG_INFO(0, shrink)
@@ -277,9 +282,8 @@ ZEND_ARG_INFO(0, key)
 ZEND_ARG_INFO(0, entry)
 ZEND_END_ARG_INFO();
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_onlykey, 0, 0, 1)
-ZEND_ARG_INFO(0, key)
-ZEND_END_ARG_INFO();
+ARGINFO_KEYONLY(key);
+ARGINFO_KEYONLY(prefix);
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_onlyhash, 0, 0, 1)
 ZEND_ARG_ARRAY_INFO(0, array, 0)
@@ -304,9 +308,9 @@ static const zend_function_entry hattrie_methods[] = {
                             PHP_ME(HatTrie, keyExists, arginfo_onlykey, ZEND_ACC_PUBLIC)
                                 PHP_ME(HatTrie, search, arginfo_onlykey, ZEND_ACC_PUBLIC)
                                     PHP_ME(HatTrie, erase, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                        PHP_ME(HatTrie, prefixSearch, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                            PHP_ME(HatTrie, prefixErase, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                                PHP_ME(HatTrie, longestPrefix, arginfo_onlykey, ZEND_ACC_PUBLIC)
+                                        PHP_ME(HatTrie, prefixSearch, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
+                                            PHP_ME(HatTrie, prefixErase, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
+                                                PHP_ME(HatTrie, longestPrefix, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
                                                     PHP_ME(HatTrie, map, arginfo_onlycallable, ZEND_ACC_PUBLIC)
                                                         PHP_ME(HatTrie, offsetSet, arginfo_insert, ZEND_ACC_PUBLIC)
                                                             PHP_ME(HatTrie, offsetGet, arginfo_onlykey, ZEND_ACC_PUBLIC)
