@@ -94,6 +94,12 @@ static inline phphattrie_object *phphattrie_obj_from_obj(zend_object *obj)
   delete obj->name;                                                         \
   zend_object_std_dtor(object);
 
+// macro to compute the element count
+#define TRIE_OBJECT_COUNT(name, type, zv, count)          \
+  type##_object *trie = type##_obj_from_obj(Z_OBJ_P(zv)); \
+  *count = trie->name->size();                            \
+  return SUCCESS;
+
 /**
  * @brief creates new phptrie object
  * 
@@ -179,22 +185,28 @@ static void phphattrie_object_free(zend_object *object)
   TRIE_OBJECT_FREE(hat, phphattrie, object);
 }
 
+/**
+ * @brief allows for HatTrie object to implement Countable::count
+ * 
+ * @param obj 
+ * @param count 
+ * @return int 
+ */
 static int phphattrie_count_elements(zval *obj, zend_long *count)
 {
-  phphattrie_object *hat;
-  hat = Z_HATOBJ_P(obj);
-
-  *count = hat->hat->size();
-  return SUCCESS;
+  TRIE_OBJECT_COUNT(hat, phphattrie, obj, count);
 }
 
+/**
+ * @brief allows for Trie object to implement Countable::count
+ * 
+ * @param obj 
+ * @param count 
+ * @return int 
+ */
 static int phptrie_count_elements(zval *obj, zend_long *count)
 {
-  phptrie_object *trie;
-  trie = Z_TRIEOBJ_P(obj);
-
-  *count = trie->trie->size();
-  return SUCCESS;
+  TRIE_OBJECT_COUNT(trie, phptrie, obj, count);
 }
 
 // macro to convert Trie branch to hashtable entry
@@ -1022,7 +1034,9 @@ static void hatMap(INTERNAL_FUNCTION_PARAMETERS)
       hattrie->shrinkTrie();
     }
 
-    ZVAL_OBJ(return_value, phphattrie_object_new_ex(hattrie));
+    ZVAL_OBJ(return_value, phphattrie_object_new_ex(hattrie,
+                                                    hat->loadFactor,
+                                                    hat->shrink));
   }
 }
 
@@ -1096,7 +1110,9 @@ static void hatFilter(INTERNAL_FUNCTION_PARAMETERS)
       hattrie->shrinkTrie();
     }
 
-    ZVAL_OBJ(return_value, phphattrie_object_new_ex(hattrie));
+    ZVAL_OBJ(return_value, phphattrie_object_new_ex(hattrie,
+                                                    hat->loadFactor,
+                                                    hat->shrink));
   }
 }
 
