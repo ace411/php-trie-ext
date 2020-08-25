@@ -117,6 +117,29 @@ zend_object *phphattrie_object_new(zend_class_entry *ce TSRMLS_DC)
 }
 
 /**
+ * @brief creates new PHP HatTrie object from corresponding C++ object
+ * 
+ * @param trie 
+ * @param lftr 
+ * @param shr 
+ * @return zend_object* 
+ */
+zend_object *phphattrie_object_new_ex(HatTrie *trie, float lftr = 8.0f, bool shr = false)
+{
+  phphattrie_object *obj = (phphattrie_object *)ecalloc(1,
+                                                        sizeof(phphattrie_object) + zend_object_properties_size(phphattrie_ce));
+  zend_object_std_init(&obj->std, phphattrie_ce);
+  // object_properties_init(&obj->std, phphattrie_ce);
+  obj->std.handlers = &phphattrie_object_handlers;
+
+  obj->hat = trie;
+  obj->loadFactor = lftr;
+  obj->shrink = shr;
+
+  return &obj->std;
+}
+
+/**
  * @brief destroys phptrie object
  * 
  * @param object 
@@ -990,6 +1013,7 @@ static void hatMap(INTERNAL_FUNCTION_PARAMETERS)
 
       ZVAL_TO_TRIE_NODE(result, ins);
       hattrie->insert(buffer.c_str(), ins);
+      // i_zval_ptr_dtor(&result);
     }
     zend_release_fcall_info_cache(&fci_cache);
 
@@ -998,8 +1022,7 @@ static void hatMap(INTERNAL_FUNCTION_PARAMETERS)
       hattrie->shrinkTrie();
     }
 
-    hat->hat = hattrie;
-    RETURN_OBJ(Z_OBJ_P(obj));
+    ZVAL_OBJ(return_value, phphattrie_object_new_ex(hattrie));
   }
 }
 
@@ -1017,6 +1040,7 @@ static void hatFilter(INTERNAL_FUNCTION_PARAMETERS)
   phphattrie_object *hat;
 
   Htrie htrie;
+  HatTrie *hattrie;
 
   ZEND_PARSE_PARAMETERS_START(1, 1)
   Z_PARAM_FUNC(fci, fci_cache)
@@ -1025,6 +1049,7 @@ static void hatFilter(INTERNAL_FUNCTION_PARAMETERS)
   hat = Z_HATOBJ_P(obj);
   if (hat != NULL)
   {
+    hattrie = new HatTrie(hat->loadFactor);
     htrie = hat->hat->all();
 
     std::string buffer;
@@ -1047,30 +1072,31 @@ static void hatFilter(INTERNAL_FUNCTION_PARAMETERS)
       }
 
       i_zval_ptr_dtor(&arg);
+      // i_zval_ptr_dtor(&temp);
 
-      // purge entry if the result is false
       if (Z_TYPE(result) == IS_FALSE)
       {
-        hat->hat->remove(buffer.c_str());
+        continue;
       }
       else if (Z_TYPE(result) == IS_TRUE)
       {
-        // move on to next iteration if the result is true
-        continue;
+        hattrie->insert(buffer.c_str(), idx.value());
       }
       else
       {
         TRIE_THROW("Only boolean results are acceptable");
       }
+
+      // i_zval_ptr_dtor(&result);
     }
     zend_release_fcall_info_cache(&fci_cache);
 
     if (hat->shrink)
     {
-      hat->hat->shrinkTrie();
+      hattrie->shrinkTrie();
     }
 
-    RETURN_OBJ(Z_OBJ_P(obj));
+    ZVAL_OBJ(return_value, phphattrie_object_new_ex(hattrie));
   }
 }
 
