@@ -93,6 +93,7 @@ namespace trie
 
       key++;
     }
+    history.shrink_to_fit(); // reduce memory usage
 
     current->val = val;
     current->history = history;
@@ -251,6 +252,66 @@ namespace trie
     return res;
   }
 
+  /**
+   * @brief checks if a string exists inside another
+   * 
+   * @param needle 
+   * @param haystack 
+   * @return true 
+   * @return false 
+   */
+  bool strExists(std::string needle, std::string haystack)
+  {
+    std::string::size_type size = haystack.find(needle);
+
+    return size == std::string::npos ? false : true;
+  }
+
+  /**
+   * @brief searches trie for entries that match a specified prefix
+   * 
+   * @param trie 
+   * @param prefix 
+   * @return triemap 
+   */
+  triemap prefixLookup(TrieNode *&trie, std::string prefix)
+  {
+    triemap res;
+    TrieNode *current = trie;
+
+    for (auto idx : current->children)
+    {
+      if (idx.second != nullptr)
+      {
+        NodeVal val = idx.second->val;
+        std::string history = idx.second->history;
+        history.shrink_to_fit();
+
+        bool prefixCheck = strExists(prefix, history);
+
+        if (val.type != NodeVal::isUndefined && prefixCheck)
+        {
+          if (history.size() != 0)
+          {
+            res[history] = val;
+          }
+        }
+
+        if (!hasChildren(idx.second) && prefixCheck)
+        {
+          res[history] = val;
+        }
+        else
+        {
+          auto other = prefixLookup(idx.second, prefix);
+          res.insert(other.begin(), other.end());
+        }
+      }
+    }
+
+    return res;
+  }
+
   class Trie
   {
   private:
@@ -258,6 +319,7 @@ namespace trie
 
   public:
     Trie() {}
+    Trie(TrieNode *obj) : trie(obj) {}
     ~Trie() { trie = nullptr; }
 
     bool insert(const char *key, NodeVal val)
@@ -290,6 +352,11 @@ namespace trie
     int size()
     {
       return getPairs(trie).size();
+    }
+
+    triemap prefixSearch(std::string prefix)
+    {
+      return prefixLookup(trie, prefix);
     }
   };
 
