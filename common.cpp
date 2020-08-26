@@ -835,8 +835,9 @@ static void hatPrefixSearch(INTERNAL_FUNCTION_PARAMETERS)
       hattrie->shrinkTrie();
     }
 
-    hat->hat = hattrie;
-    RETURN_OBJ(Z_OBJ_P(obj));
+    ZVAL_OBJ(return_value, phphattrie_object_new_ex(hattrie,
+                                                    hat->loadFactor,
+                                                    hat->shrink));
   }
 
   zend_string_release(prefix);
@@ -884,6 +885,8 @@ static void hatPrefixErase(INTERNAL_FUNCTION_PARAMETERS)
   zval *obj = getThis();
   phphattrie_object *hat;
 
+  HatTrie *hattrie;
+
   ZEND_PARSE_PARAMETERS_START(1, 1)
   Z_PARAM_STR(prefix)
   ZEND_PARSE_PARAMETERS_END();
@@ -898,12 +901,17 @@ static void hatPrefixErase(INTERNAL_FUNCTION_PARAMETERS)
   {
     hat->hat->prefixDelete(ZSTR_VAL(prefix));
 
+    auto entries = hat->hat->all();
+    hattrie = new HatTrie(entries);
+
     if (hat->shrink)
     {
-      hat->hat->shrinkTrie();
+      hattrie->shrinkTrie();
     }
 
-    RETURN_OBJ(Z_OBJ_P(obj));
+    ZVAL_OBJ(return_value, phphattrie_object_new_ex(hattrie,
+                                                    hat->loadFactor,
+                                                    hat->shrink));
   }
 
   zend_string_release(prefix);
