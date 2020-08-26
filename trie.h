@@ -228,18 +228,23 @@ namespace trie
     {
       if (idx.second != nullptr)
       {
-        if (idx.second->val.type != NodeVal::isUndefined)
+        std::string history = idx.second->history;
+        history.shrink_to_fit();
+
+        NodeVal val = idx.second->val;
+
+        if (val.type != NodeVal::isUndefined)
         {
           // for the root node
-          if (idx.second->history.size() != 0)
+          if (history.size() != 0)
           {
-            res[idx.second->history] = idx.second->val;
+            res[history] = val;
           }
         }
 
         if (!hasChildren(idx.second))
         {
-          res[idx.second->history] = idx.second->val;
+          res[history] = val;
         }
         else
         {
