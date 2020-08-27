@@ -150,8 +150,8 @@ zend_object *phptrie_object_new_ex(Trie *trie)
  * @return zend_object* 
  */
 zend_object *phphattrie_object_new_ex(HatTrie *trie,
-                                      size_t threshold = 16384,
-                                      float lftr = 8.0f,
+                                      size_t threshold = DEFAULT_BURST_THRESHOLD,
+                                      float lftr = DEFAULT_LOAD_FACTOR,
                                       bool shr = false)
 {
   phphattrie_object *obj = (phphattrie_object *)ecalloc(1,
@@ -1197,24 +1197,12 @@ static void hatMap(INTERNAL_FUNCTION_PARAMETERS)
       // bind NodeVal to zval stored in temp variable
       zval temp;
       TRIE_NODE_TO_ZVAL(temp, idx.value());
-
-      fci.retval = &result;
-      fci.param_count = 1;
-      fci.params = &arg;
-
-      ZVAL_COPY(&arg, &temp);
-      if (zend_call_function(&fci, &fci_cache) == FAILURE ||
-          Z_TYPE(result) == IS_UNDEF)
-      {
-        TRIE_THROW("map operation failure");
-      }
+      MAP_FILTER_FUNC_CALL(fci, fci_cache, result, arg);
 
       i_zval_ptr_dtor(&arg);
-      // i_zval_ptr_dtor(&temp);
 
       ZVAL_TO_TRIE_NODE(result, ins);
       hattrie->insert(buffer.c_str(), ins);
-      // i_zval_ptr_dtor(&result);
     }
     zend_release_fcall_info_cache(&fci_cache);
 
@@ -1263,35 +1251,10 @@ static void hatFilter(INTERNAL_FUNCTION_PARAMETERS)
 
       zval temp;
       TRIE_NODE_TO_ZVAL(temp, idx.value());
-
-      fci.retval = &result;
-      fci.param_count = 1;
-      fci.params = &arg;
-
-      ZVAL_COPY(&arg, &temp);
-      if (zend_call_function(&fci, &fci_cache) == FAILURE ||
-          Z_TYPE(result) == IS_UNDEF)
-      {
-        TRIE_THROW("Filter operation failure");
-      }
+      MAP_FILTER_FUNC_CALL(fci, fci_cache, result, arg);
 
       i_zval_ptr_dtor(&arg);
-      // i_zval_ptr_dtor(&temp);
-
-      if (Z_TYPE(result) == IS_FALSE)
-      {
-        continue;
-      }
-      else if (Z_TYPE(result) == IS_TRUE)
-      {
-        hattrie->insert(buffer.c_str(), idx.value());
-      }
-      else
-      {
-        TRIE_THROW("Only boolean results are acceptable");
-      }
-
-      // i_zval_ptr_dtor(&result);
+      FILTER_OP(hattrie, result, buffer.c_str(), idx.value());
     }
     zend_release_fcall_info_cache(&fci_cache);
 
