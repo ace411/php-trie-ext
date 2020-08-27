@@ -1,12 +1,8 @@
 --TEST--
-Setting the shrink flag shrinks trie nodes
+Adjusting the burst threshold to anything other than default works
 --FILE--
 <?php
-$trie = new HatTrie(
-  HatTrie::DEFAULT_BURST_THRESHOLD,
-  HatTrie::DEFAULT_LOAD_FACTOR, 
-  HatTrie::SHRINK
-);
+$trie = new HatTrie(1024);
 
 $trie['foo'] = json_encode(range(1, 250000));
 $trie['bar'] = json_encode(range(1, 150000));

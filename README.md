@@ -101,10 +101,11 @@ class HatTrie implements Countable, ArrayAccess, JsonSerializable {
   const bool SHRINK = true;
   const bool NO_SHRINK = false;
   const double DEFAULT_LOAD_FACTOR = 8.0;
+  const int DEFAULT_BURST_THRESHOLD = 16384;
 
   /* Methods */
-  public __construct( double $loadFactor = HatTrie::DEFAULT_LOAD_FACTOR [, bool $shrink = HatTrie::NO_SHRINK ] );
-  public static fromArray( array $array [, double $loadFactor = HatTrie::DEFAULT_LOAD_FACTOR [, bool $shrink = HatTrie::NO_SHRINK ]] ) : HatTrie;
+  public __construct( int $burstThreshold = HatTrie::DEFAULT_BURST_THRESHOLD [, double $loadFactor = HatTrie::DEFAULT_LOAD_FACTOR [, bool $shrink = HatTrie::NO_SHRINK ]] );
+  public static fromArray( array $array [, int $burstThreshold = HatTrie::DEFAULT_BURST_THRESHOLD [, double $loadFactor = HatTrie::DEFAULT_LOAD_FACTOR [, bool $shrink = HatTrie::NO_SHRINK ]]] ) : HatTrie;
   public insert|offsetSet( string $key [, mixed $entry ] ) : bool;
   public erase|offsetUnset( string $key ) : void;
   public keyExists|offsetExists( string $key ) : bool;

@@ -2,7 +2,7 @@
 Setting the load-factor to anything other than default works
 --FILE--
 <?php
-$trie = new HatTrie(4.0, HatTrie::NO_SHRINK);
+$trie = new HatTrie(HatTrie::DEFAULT_BURST_THRESHOLD, 4.0);
 
 $trie['foo'] = json_encode(range(1, 250000));
 $trie['bar'] = json_encode(range(1, 150000));

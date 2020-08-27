@@ -371,13 +371,13 @@ namespace trie
   {
   private:
     Htrie hatTrie;
-    float loadFactor = 8.0f;
 
   public:
     // HatTrie() {}
-    HatTrie(float factor = 8.0f) : loadFactor(factor)
+    HatTrie(float factor = 8.0f, size_t threshold = 16384)
     {
       hatTrie.max_load_factor(factor);
+      hatTrie.burst_threshold(threshold);
     }
     HatTrie(Htrie hat) : hatTrie(hat) {}
     ~HatTrie()
@@ -432,6 +432,16 @@ namespace trie
     void shrinkTrie()
     {
       hatTrie.shrink_to_fit();
+    }
+
+    void adjustLoadFactor(float factor = 8.0f)
+    {
+      hatTrie.max_load_factor(factor);
+    }
+
+    void adjustBurstThreshold(size_t threshold = 16384)
+    {
+      hatTrie.burst_threshold(threshold);
     }
   };
 }; // namespace trie

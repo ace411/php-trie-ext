@@ -266,13 +266,15 @@ PHP_METHOD(HatTrie, longestPrefix)
   ZEND_ARG_INFO(0, key)                              \
   ZEND_END_ARG_INFO();
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_hatconstruct, 0, 0, 2)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_hatconstruct, 0, 0, 3)
+ZEND_ARG_INFO(0, burstThreshold)
 ZEND_ARG_INFO(0, loadFactor)
 ZEND_ARG_INFO(0, shrink)
 ZEND_END_ARG_INFO();
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_hatfromarray, 0, 0, 3)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_hatfromarray, 0, 0, 4)
 ZEND_ARG_ARRAY_INFO(0, array, 0)
+ZEND_ARG_INFO(0, burstThreshold)
 ZEND_ARG_INFO(0, loadFactor)
 ZEND_ARG_INFO(0, shrink)
 ZEND_END_ARG_INFO();
@@ -388,7 +390,14 @@ PHP_MINIT_FUNCTION(php_trie)
 
   zend_declare_class_constant_bool(phphattrie_ce, "SHRINK", sizeof("SHRINK") - 1, 1);
   zend_declare_class_constant_bool(phphattrie_ce, "NO_SHRINK", sizeof("NO_SHRINK") - 1, 0);
-  zend_declare_class_constant_double(phphattrie_ce, "DEFAULT_LOAD_FACTOR", sizeof("DEFAULT_LOAD_FACTOR") - 1, 8.0);
+  zend_declare_class_constant_double(phphattrie_ce,
+                                     "DEFAULT_LOAD_FACTOR",
+                                     sizeof("DEFAULT_LOAD_FACTOR") - 1,
+                                     DEFAULT_LOAD_FACTOR);
+  zend_declare_class_constant_long(phphattrie_ce,
+                                   "DEFAULT_BURST_THRESHOLD",
+                                   sizeof("DEFAULT_BURST_THRESHOLD") - 1,
+                                   DEFAULT_BURST_THRESHOLD);
 
 #ifdef HAVE_SPL
   phptrie_exception_ce = zend_register_internal_class_ex(

@@ -47,6 +47,7 @@ typedef struct _phptrie_object
 typedef struct _phphattrie_object
 {
   HatTrie *hat;
+  size_t burstThreshold;
   float loadFactor;
   bool shrink;
   zend_object std;
@@ -130,7 +131,10 @@ zend_object *phphattrie_object_new(zend_class_entry *ce TSRMLS_DC)
  * @param shr 
  * @return zend_object* 
  */
-zend_object *phphattrie_object_new_ex(HatTrie *trie, float lftr = 8.0f, bool shr = false)
+zend_object *phphattrie_object_new_ex(HatTrie *trie,
+                                      size_t threshold = 16384,
+                                      float lftr = 8.0f,
+                                      bool shr = false)
 {
   phphattrie_object *obj = (phphattrie_object *)ecalloc(1,
                                                         sizeof(phphattrie_object) + zend_object_properties_size(phphattrie_ce));
@@ -141,6 +145,7 @@ zend_object *phphattrie_object_new_ex(HatTrie *trie, float lftr = 8.0f, bool shr
   obj->hat = trie;
   obj->loadFactor = lftr;
   obj->shrink = shr;
+  obj->burstThreshold = threshold;
 
   return &obj->std;
 }
@@ -707,13 +712,16 @@ static void trieFromArray(INTERNAL_FUNCTION_PARAMETERS)
  */
 static void hatConstruct(INTERNAL_FUNCTION_PARAMETERS)
 {
-  double factor = 8.0;
+  double factor(DEFAULT_LOAD_FACTOR);
+  long burstThreshold(DEFAULT_BURST_THRESHOLD);
   zend_bool shrink = 0;
 
   zval *obj = getThis();
   phphattrie_object *hat;
 
-  ZEND_PARSE_PARAMETERS_START(0, 2)
+  ZEND_PARSE_PARAMETERS_START(0, 3)
+  Z_PARAM_OPTIONAL
+  Z_PARAM_LONG(burstThreshold)
   Z_PARAM_OPTIONAL
   Z_PARAM_DOUBLE(factor)
   Z_PARAM_OPTIONAL
@@ -729,7 +737,9 @@ static void hatConstruct(INTERNAL_FUNCTION_PARAMETERS)
   {
     hat->loadFactor = (float)factor;
     hat->shrink = shrink == 1 ? true : false;
-    hat->hat = new HatTrie(hat->loadFactor);
+    hat->burstThreshold = (size_t)burstThreshold;
+
+    hat->hat = new HatTrie(hat->loadFactor, hat->burstThreshold);
   }
 }
 
@@ -744,13 +754,16 @@ static void hatFromArray(INTERNAL_FUNCTION_PARAMETERS)
   zend_string *hashKey;
 
   zend_bool shrink = 0;
-  double factor = 8.0;
+  double factor(DEFAULT_LOAD_FACTOR);
+  long burstThreshold(DEFAULT_BURST_THRESHOLD);
 
   zval *obj = getThis();
   phphattrie_object *hat;
 
-  ZEND_PARSE_PARAMETERS_START(1, 3)
+  ZEND_PARSE_PARAMETERS_START(1, 4)
   Z_PARAM_ARRAY(array)
+  Z_PARAM_OPTIONAL
+  Z_PARAM_LONG(burstThreshold)
   Z_PARAM_OPTIONAL
   Z_PARAM_DOUBLE(factor)
   Z_PARAM_OPTIONAL
@@ -766,7 +779,7 @@ static void hatFromArray(INTERNAL_FUNCTION_PARAMETERS)
     TRIE_THROW("Array cannot be empty");
   }
 
-  auto dest = new HatTrie((float)factor);
+  auto dest = new HatTrie((float)factor, (size_t)burstThreshold);
 
   ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(array), hashKey, hashVal)
   {
@@ -790,6 +803,7 @@ static void hatFromArray(INTERNAL_FUNCTION_PARAMETERS)
 
   hat->shrink = shrink == 1 ? true : false;
   hat->loadFactor = (float)factor;
+  hat->burstThreshold = (size_t)burstThreshold;
 
   hat->hat = dest;
 }
@@ -821,7 +835,7 @@ static void hatPrefixSearch(INTERNAL_FUNCTION_PARAMETERS)
   hat = Z_HATOBJ_P(obj);
   if (hat != NULL)
   {
-    hattrie = new HatTrie(hat->loadFactor);
+    hattrie = new HatTrie(hat->loadFactor, hat->burstThreshold);
     data = hat->hat->all();
     auto results = data.equal_prefix_range(ZSTR_VAL(prefix));
 
@@ -836,6 +850,7 @@ static void hatPrefixSearch(INTERNAL_FUNCTION_PARAMETERS)
     }
 
     ZVAL_OBJ(return_value, phphattrie_object_new_ex(hattrie,
+                                                    hat->burstThreshold,
                                                     hat->loadFactor,
                                                     hat->shrink));
   }
@@ -909,7 +924,11 @@ static void hatPrefixErase(INTERNAL_FUNCTION_PARAMETERS)
       hattrie->shrinkTrie();
     }
 
+    hattrie->adjustLoadFactor(hat->loadFactor);
+    hattrie->adjustBurstThreshold(hat->burstThreshold);
+
     ZVAL_OBJ(return_value, phphattrie_object_new_ex(hattrie,
+                                                    hat->burstThreshold,
                                                     hat->loadFactor,
                                                     hat->shrink));
   }
@@ -1004,7 +1023,7 @@ static void hatMap(INTERNAL_FUNCTION_PARAMETERS)
   if (hat != NULL)
   {
     htrie = hat->hat->all();
-    hattrie = new HatTrie(hat->loadFactor);
+    hattrie = new HatTrie(hat->loadFactor, hat->burstThreshold);
 
     std::string buffer;
 
@@ -1043,6 +1062,7 @@ static void hatMap(INTERNAL_FUNCTION_PARAMETERS)
     }
 
     ZVAL_OBJ(return_value, phphattrie_object_new_ex(hattrie,
+                                                    hat->burstThreshold,
                                                     hat->loadFactor,
                                                     hat->shrink));
   }
@@ -1071,7 +1091,7 @@ static void hatFilter(INTERNAL_FUNCTION_PARAMETERS)
   hat = Z_HATOBJ_P(obj);
   if (hat != NULL)
   {
-    hattrie = new HatTrie(hat->loadFactor);
+    hattrie = new HatTrie(hat->loadFactor, hat->burstThreshold);
     htrie = hat->hat->all();
 
     std::string buffer;
@@ -1119,6 +1139,7 @@ static void hatFilter(INTERNAL_FUNCTION_PARAMETERS)
     }
 
     ZVAL_OBJ(return_value, phphattrie_object_new_ex(hattrie,
+                                                    hat->burstThreshold,
                                                     hat->loadFactor,
                                                     hat->shrink));
   }
