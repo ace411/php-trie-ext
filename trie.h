@@ -281,7 +281,7 @@ namespace trie
    */
   triemap prefixLookup(TrieNode *&trie, std::string prefix)
   {
-    triemap res;
+    triemap res; // TrieNode *res = newTrie();
     TrieNode *current = trie;
 
     for (auto idx : current->children)
@@ -324,6 +324,16 @@ namespace trie
 
   public:
     Trie() {}
+    Trie(triemap trmap)
+    {
+      trie = newTrie();
+
+      // secondary iteration might be costly
+      for (auto idx : trmap)
+      {
+        insertItem(trie, idx.first.c_str(), idx.second);
+      }
+    }
     Trie(TrieNode *obj) : trie(obj) {}
     ~Trie() { trie = nullptr; }
 

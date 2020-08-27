@@ -124,6 +124,24 @@ zend_object *phphattrie_object_new(zend_class_entry *ce TSRMLS_DC)
 }
 
 /**
+ * @brief creates new Trie object from corresponding C++ object
+ * 
+ * @param trie 
+ * @return zend_object* 
+ */
+zend_object *phptrie_object_new_ex(Trie *trie)
+{
+  phptrie_object *obj = (phptrie_object *)ecalloc(1,
+                                                  sizeof(phptrie_object) + zend_object_properties_size(phptrie_ce));
+  zend_object_std_init(&obj->std, phptrie_ce TSRMLS_CC);
+  obj->std.handlers = &phptrie_object_handlers;
+
+  obj->trie = trie;
+
+  return &obj->std;
+}
+
+/**
  * @brief creates new PHP HatTrie object from corresponding C++ object
  * 
  * @param trie 
@@ -138,8 +156,7 @@ zend_object *phphattrie_object_new_ex(HatTrie *trie,
 {
   phphattrie_object *obj = (phphattrie_object *)ecalloc(1,
                                                         sizeof(phphattrie_object) + zend_object_properties_size(phphattrie_ce));
-  zend_object_std_init(&obj->std, phphattrie_ce);
-  // object_properties_init(&obj->std, phphattrie_ce);
+  zend_object_std_init(&obj->std, phphattrie_ce TSRMLS_CC);
   obj->std.handlers = &phphattrie_object_handlers;
 
   obj->hat = trie;
@@ -286,6 +303,31 @@ static int phptrie_count_elements(zval *obj, zend_long *count)
     break;                            \
   default:                            \
     continue;                         \
+  }
+
+// macro that performs map/filter function call
+#define MAP_FILTER_FUNC_CALL(fn, fncache, result, arg)                            \
+  fn.retval = &result;                                                            \
+  fn.param_count = 1;                                                             \
+  fn.params = &arg;                                                               \
+  ZVAL_COPY(&arg, &temp);                                                         \
+  if (zend_call_function(&fn, &fncache) == FAILURE || Z_TYPE(result) == IS_UNDEF) \
+  {                                                                               \
+    TRIE_THROW("map operation failure");                                          \
+  }
+
+// macro that performs filter operation
+#define FILTER_OP(trie, fnres, key, value) \
+  switch (Z_TYPE(fnres))                   \
+  {                                        \
+  case IS_FALSE:                           \
+    continue;                              \
+  case IS_TRUE:                            \
+    trie->insert(key, value);              \
+    break;                                 \
+  default:                                 \
+    TRIE_THROW("Filter operation failed"); \
+    break;                                 \
   }
 
 /* ---- common routines ----- */
@@ -702,6 +744,126 @@ static void trieFromArray(INTERNAL_FUNCTION_PARAMETERS)
   object_init_ex(return_value, phptrie_ce);
   trie = Z_TRIEOBJ_P(return_value);
   trie->trie = dest;
+}
+
+/**
+ * @brief PHP trie prefixSearch function
+ * 
+ */
+static void triePrefixSearch(INTERNAL_FUNCTION_PARAMETERS)
+{
+  zend_string *prefix;
+
+  zval *obj = getThis();
+  phptrie_object *trie;
+
+  Trie *cpptrie;
+
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+  Z_PARAM_STR(prefix)
+  ZEND_PARSE_PARAMETERS_END();
+
+  if (ZSTR_LEN(prefix) == 0)
+  {
+    TRIE_THROW("Prefix cannot be empty");
+  }
+
+  trie = Z_TRIEOBJ_P(obj);
+  if (trie != NULL)
+  {
+    auto entries = trie->trie->prefixSearch(ZSTR_VAL(prefix));
+    cpptrie = new Trie(entries);
+
+    ZVAL_OBJ(return_value, phptrie_object_new_ex(cpptrie));
+  }
+
+  zend_string_release(prefix);
+}
+
+/**
+ * @brief PHP trie map function
+ * 
+ */
+static void trieMap(INTERNAL_FUNCTION_PARAMETERS)
+{
+  zval result, arg;
+  zend_fcall_info fci = empty_fcall_info;
+  zend_fcall_info_cache fci_cache = empty_fcall_info_cache;
+
+  zval *obj = getThis();
+  phptrie_object *trie;
+
+  triemap entries;
+  Trie *cpptrie;
+
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+  Z_PARAM_FUNC(fci, fci_cache)
+  ZEND_PARSE_PARAMETERS_END();
+
+  trie = Z_TRIEOBJ_P(obj);
+  if (trie != NULL)
+  {
+    entries = trie->trie->all();
+    cpptrie = new Trie();
+
+    for (auto idx : entries)
+    {
+      NodeVal ins;
+      zval temp;
+
+      TRIE_NODE_TO_ZVAL(temp, idx.second);
+      MAP_FILTER_FUNC_CALL(fci, fci_cache, result, arg);
+
+      i_zval_ptr_dtor(&arg);
+
+      ZVAL_TO_TRIE_NODE(result, ins);
+      cpptrie->insert(idx.first.c_str(), ins);
+    }
+    zend_release_fcall_info_cache(&fci_cache);
+
+    ZVAL_OBJ(return_value, phptrie_object_new_ex(cpptrie));
+  }
+}
+
+/**
+ * @brief PHP trie filter function
+ * 
+ */
+static void trieFilter(INTERNAL_FUNCTION_PARAMETERS)
+{
+  zval result, arg;
+  zend_fcall_info fci = empty_fcall_info;
+  zend_fcall_info_cache fci_cache = empty_fcall_info_cache;
+
+  zval *obj = getThis();
+  phptrie_object *trie;
+
+  triemap entries;
+  Trie *cpptrie;
+
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+  Z_PARAM_FUNC(fci, fci_cache)
+  ZEND_PARSE_PARAMETERS_END();
+
+  trie = Z_TRIEOBJ_P(obj);
+  if (trie != NULL)
+  {
+    entries = trie->trie->all();
+    cpptrie = new Trie();
+
+    for (auto idx : entries)
+    {
+      zval temp;
+      TRIE_NODE_TO_ZVAL(temp, idx.second);
+      MAP_FILTER_FUNC_CALL(fci, fci_cache, result, arg);
+
+      i_zval_ptr_dtor(&arg);
+      FILTER_OP(cpptrie, result, idx.first.c_str(), idx.second);
+    }
+    zend_release_fcall_info_cache(&fci_cache);
+
+    ZVAL_OBJ(return_value, phptrie_object_new_ex(cpptrie));
+  }
 }
 
 /* ---- HAT trie routines ----- */

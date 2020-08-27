@@ -105,10 +105,37 @@ PHP_METHOD(Trie, toArray)
 }
 /* }}} */
 
+/* {{{ proto Trie Trie::jsonSerialize()
+ */
 PHP_METHOD(Trie, jsonSerialize)
 {
   trieToArray(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
+/* }}} */
+
+/* {{{ proto Trie Trie::prefixSearch(string prefix)
+ */
+PHP_METHOD(Trie, prefixSearch)
+{
+  triePrefixSearch(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+/* }}} */
+
+/* {{{ proto Trie Trie::map(callable func)
+ */
+PHP_METHOD(Trie, map)
+{
+  trieMap(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+/* }}} */
+
+/* {{{ proto Trie Trie::filter(callable func)
+ */
+PHP_METHOD(Trie, filter)
+{
+  trieFilter(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+/* }}} */
 
 /* ---- HatTrie methods ----- */
 
@@ -336,7 +363,10 @@ static const zend_function_entry trie_methods[] = {
                                             PHP_ME(Trie, offsetUnset, arginfo_onlykey, ZEND_ACC_PUBLIC)
                                                 PHP_ME(Trie, toArray, NULL, ZEND_ACC_PUBLIC)
                                                     PHP_ME(Trie, jsonSerialize, NULL, ZEND_ACC_PUBLIC)
-                                                        PHP_FE_END};
+                                                        PHP_ME(Trie, prefixSearch, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
+                                                            PHP_ME(Trie, map, arginfo_onlycallable, ZEND_ACC_PUBLIC)
+                                                                PHP_ME(Trie, filter, arginfo_onlycallable, ZEND_ACC_PUBLIC)
+                                                                    PHP_FE_END};
 
 /* {{{ PHP_RINIT_FUNCTION
  */
