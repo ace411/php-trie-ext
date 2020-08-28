@@ -17,7 +17,7 @@ PHP_METHOD(Trie, __construct)
 }
 /* }}} */
 
-/* {{{ proto bool Trie::insert(string key, mixed entry)
+/* {{{ proto bool Trie::insert( string key [, mixed entry ] )
  */
 PHP_METHOD(Trie, insert)
 {
@@ -25,7 +25,7 @@ PHP_METHOD(Trie, insert)
 }
 /* }}} */
 
-/* {{{ proto bool Trie::keyExists(string key)
+/* {{{ proto bool Trie::keyExists( string key )
  */
 PHP_METHOD(Trie, keyExists)
 {
@@ -33,7 +33,7 @@ PHP_METHOD(Trie, keyExists)
 }
 /* }}} */
 
-/* {{{ proto static Trie::fromArray(array entries)
+/* {{{ proto static Trie::fromArray( array entries )
  */
 PHP_METHOD(Trie, fromArray)
 {
@@ -41,7 +41,7 @@ PHP_METHOD(Trie, fromArray)
 }
 /* }}} */
 
-/* {{{ proto mixed Trie::search(string key)
+/* {{{ proto mixed Trie::search( string key )
  */
 PHP_METHOD(Trie, search)
 {
@@ -49,7 +49,7 @@ PHP_METHOD(Trie, search)
 }
 /* }}} */
 
-/* {{{ proto void Trie::erase(string key)
+/* {{{ proto void Trie::erase( string key )
  */
 PHP_METHOD(Trie, erase)
 {
@@ -57,7 +57,7 @@ PHP_METHOD(Trie, erase)
 }
 /* }}} */
 
-/* {{{ proto bool Trie::offsetSet(string key, mixed entry)
+/* {{{ proto bool Trie::offsetSet( string key [, mixed entry ] )
  */
 PHP_METHOD(Trie, offsetSet)
 {
@@ -65,7 +65,7 @@ PHP_METHOD(Trie, offsetSet)
 }
 /* }}} */
 
-/* {{{ proto mixed Trie::offsetGet(string key)
+/* {{{ proto mixed Trie::offsetGet( string key )
  */
 PHP_METHOD(Trie, offsetGet)
 {
@@ -81,7 +81,7 @@ PHP_METHOD(Trie, size)
 }
 /* }}} */
 
-/* {{{ proto bool Trie::offsetExists(string key)
+/* {{{ proto bool Trie::offsetExists( string key )
  */
 PHP_METHOD(Trie, offsetExists)
 {
@@ -89,7 +89,7 @@ PHP_METHOD(Trie, offsetExists)
 }
 /* }}} */
 
-/* {{{ proto void Trie::offsetUnset(string key)
+/* {{{ proto void Trie::offsetUnset( string key )
  */
 PHP_METHOD(Trie, offsetUnset)
 {
@@ -113,7 +113,7 @@ PHP_METHOD(Trie, jsonSerialize)
 }
 /* }}} */
 
-/* {{{ proto Trie Trie::prefixSearch(string prefix)
+/* {{{ proto Trie Trie::prefixSearch( string prefix )
  */
 PHP_METHOD(Trie, prefixSearch)
 {
@@ -121,7 +121,7 @@ PHP_METHOD(Trie, prefixSearch)
 }
 /* }}} */
 
-/* {{{ proto Trie Trie::map(callable func)
+/* {{{ proto Trie Trie::map( callable func )
  */
 PHP_METHOD(Trie, map)
 {
@@ -129,7 +129,7 @@ PHP_METHOD(Trie, map)
 }
 /* }}} */
 
-/* {{{ proto Trie Trie::filter(callable func)
+/* {{{ proto Trie Trie::filter( callable func )
  */
 PHP_METHOD(Trie, filter)
 {
@@ -139,7 +139,7 @@ PHP_METHOD(Trie, filter)
 
 /* ---- HatTrie methods ----- */
 
-/* {{{ proto HatTrie::__construct()
+/* {{{ proto HatTrie::__construct( int burstThreshold [, double loadFactor [, bool shrink ]] )
  */
 PHP_METHOD(HatTrie, __construct)
 {
@@ -147,7 +147,7 @@ PHP_METHOD(HatTrie, __construct)
 }
 /* }}} */
 
-/* {{{ proto bool HatTrie::insert(string key, mixed value)
+/* {{{ proto bool HatTrie::insert( string key [, mixed value ] )
  */
 PHP_METHOD(HatTrie, insert)
 {
@@ -155,7 +155,7 @@ PHP_METHOD(HatTrie, insert)
 }
 /* }}} */
 
-/* {{{ proto mixed HatTrie::search(string key)
+/* {{{ proto mixed HatTrie::search( string key )
  */
 PHP_METHOD(HatTrie, search)
 {
@@ -163,7 +163,7 @@ PHP_METHOD(HatTrie, search)
 }
 /* }}} */
 
-/* {{{ proto HatTrie HatTrie::prefixSearch(string prefix)
+/* {{{ proto HatTrie HatTrie::prefixSearch( string prefix )
  */
 PHP_METHOD(HatTrie, prefixSearch)
 {
@@ -171,7 +171,7 @@ PHP_METHOD(HatTrie, prefixSearch)
 }
 /* }}} */
 
-/* proto HatTrie HatTrie::map(callable func)
+/* proto HatTrie HatTrie::map( callable func )
  */
 PHP_METHOD(HatTrie, map)
 {
@@ -179,7 +179,7 @@ PHP_METHOD(HatTrie, map)
 }
 /* }}} */
 
-/* {{{ proto bool HatTrie::keyExists(string key)
+/* {{{ proto bool HatTrie::keyExists( string key )
  */
 PHP_METHOD(HatTrie, keyExists)
 {
@@ -187,7 +187,7 @@ PHP_METHOD(HatTrie, keyExists)
 }
 /* }}} */
 
-/* {{{ proto static HatTrie::fromArray(array entry)
+/* {{{ proto static HatTrie::fromArray( array entry [, int burstThreshold [, double loadFactor [, bool shrink ]]] )
  */
 PHP_METHOD(HatTrie, fromArray)
 {
@@ -203,7 +203,7 @@ PHP_METHOD(HatTrie, toArray)
 }
 /* }}} */
 
-/* {{{ proto HatTrie HatTrie::prefixErase(string prefix)
+/* {{{ proto HatTrie HatTrie::prefixErase( string prefix )
  */
 PHP_METHOD(HatTrie, prefixErase)
 {
@@ -211,7 +211,7 @@ PHP_METHOD(HatTrie, prefixErase)
 }
 /* }}} */
 
-/* {{{ proto void HatTrie::erase(string key)
+/* {{{ proto void HatTrie::erase( string key )
  */
 PHP_METHOD(HatTrie, erase)
 {
@@ -219,7 +219,7 @@ PHP_METHOD(HatTrie, erase)
 }
 /* }}} */
 
-/* {{{ proto HatTrie HatTrie::fold(callable function [, mixed accumulator ])
+/* {{{ proto HatTrie HatTrie::fold( callable function [, mixed accumulator ] )
  */
 PHP_METHOD(HatTrie, fold)
 {
@@ -227,7 +227,7 @@ PHP_METHOD(HatTrie, fold)
 }
 /* }}} */
 
-/* {{{ proto HatTrie HatTrie::filter(callable function)
+/* {{{ proto HatTrie HatTrie::filter( callable function )
  */
 PHP_METHOD(HatTrie, filter)
 {
@@ -243,7 +243,7 @@ PHP_METHOD(HatTrie, jsonSerialize)
 }
 /* }}} */
 
-/* {{{ proto mixed HatTrie::offsetGet(string key)
+/* {{{ proto mixed HatTrie::offsetGet( string key )
  */
 PHP_METHOD(HatTrie, offsetGet)
 {
@@ -251,7 +251,7 @@ PHP_METHOD(HatTrie, offsetGet)
 }
 /* }}} */
 
-/* {{{ proto bool HatTrie::offsetSet(string key, mixed value)
+/* {{{ proto bool HatTrie::offsetSet( string key [, mixed value ] )
  */
 PHP_METHOD(HatTrie, offsetSet)
 {
@@ -259,7 +259,7 @@ PHP_METHOD(HatTrie, offsetSet)
 }
 /* }}} */
 
-/* {{{ proto void HatTrie::offsetUnset(string key)
+/* {{{ proto void HatTrie::offsetUnset( string key )
  */
 PHP_METHOD(HatTrie, offsetUnset)
 {
@@ -267,7 +267,7 @@ PHP_METHOD(HatTrie, offsetUnset)
 }
 /* }}} */
 
-/* {{{ proto bool HatTrie::offsetExists(string key)
+/* {{{ proto bool HatTrie::offsetExists( string key )
  */
 PHP_METHOD(HatTrie, offsetExists)
 {
@@ -275,12 +275,15 @@ PHP_METHOD(HatTrie, offsetExists)
 }
 /* }}} */
 
+/* {{{ proto int HatTrie::size()
+ */
 PHP_METHOD(HatTrie, size)
 {
   trieCount(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
 }
+/* }}} */
 
-/* {{{ proto array longestPrefix(string prefix)
+/* {{{ proto array longestPrefix( string prefix )
  */
 PHP_METHOD(HatTrie, longestPrefix)
 {
