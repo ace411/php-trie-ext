@@ -17,7 +17,7 @@
 #define IS_HATTRIE 1
 #define IS_TRIE 2
 
-const size_t DEFAULT_BURST_THRESHOLD = 16384;
+const long DEFAULT_BURST_THRESHOLD = 16384;
 const float DEFAULT_LOAD_FACTOR = 8.0f;
 
 #ifndef HAVE_CONFIG_H
