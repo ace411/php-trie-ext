@@ -17,7 +17,7 @@ PHP_METHOD(Trie, __construct)
 }
 /* }}} */
 
-/* {{{ proto bool Trie::insert(string key, mixed entry)
+/* {{{ proto bool Trie::insert( string key [, mixed entry ] )
  */
 PHP_METHOD(Trie, insert)
 {
@@ -25,7 +25,7 @@ PHP_METHOD(Trie, insert)
 }
 /* }}} */
 
-/* {{{ proto bool Trie::keyExists(string key)
+/* {{{ proto bool Trie::keyExists( string key )
  */
 PHP_METHOD(Trie, keyExists)
 {
@@ -33,7 +33,7 @@ PHP_METHOD(Trie, keyExists)
 }
 /* }}} */
 
-/* {{{ proto static Trie::fromArray(array entries)
+/* {{{ proto static Trie::fromArray( array entries )
  */
 PHP_METHOD(Trie, fromArray)
 {
@@ -41,7 +41,7 @@ PHP_METHOD(Trie, fromArray)
 }
 /* }}} */
 
-/* {{{ proto mixed Trie::search(string key)
+/* {{{ proto mixed Trie::search( string key )
  */
 PHP_METHOD(Trie, search)
 {
@@ -49,7 +49,7 @@ PHP_METHOD(Trie, search)
 }
 /* }}} */
 
-/* {{{ proto void Trie::erase(string key)
+/* {{{ proto void Trie::erase( string key )
  */
 PHP_METHOD(Trie, erase)
 {
@@ -57,7 +57,7 @@ PHP_METHOD(Trie, erase)
 }
 /* }}} */
 
-/* {{{ proto bool Trie::offsetSet(string key, mixed entry)
+/* {{{ proto bool Trie::offsetSet( string key [, mixed entry ] )
  */
 PHP_METHOD(Trie, offsetSet)
 {
@@ -65,7 +65,7 @@ PHP_METHOD(Trie, offsetSet)
 }
 /* }}} */
 
-/* {{{ proto mixed Trie::offsetGet(string key)
+/* {{{ proto mixed Trie::offsetGet( string key )
  */
 PHP_METHOD(Trie, offsetGet)
 {
@@ -81,7 +81,7 @@ PHP_METHOD(Trie, size)
 }
 /* }}} */
 
-/* {{{ proto bool Trie::offsetExists(string key)
+/* {{{ proto bool Trie::offsetExists( string key )
  */
 PHP_METHOD(Trie, offsetExists)
 {
@@ -89,7 +89,7 @@ PHP_METHOD(Trie, offsetExists)
 }
 /* }}} */
 
-/* {{{ proto void Trie::offsetUnset(string key)
+/* {{{ proto void Trie::offsetUnset( string key )
  */
 PHP_METHOD(Trie, offsetUnset)
 {
@@ -105,14 +105,41 @@ PHP_METHOD(Trie, toArray)
 }
 /* }}} */
 
+/* {{{ proto Trie Trie::jsonSerialize()
+ */
 PHP_METHOD(Trie, jsonSerialize)
 {
   trieToArray(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
+/* }}} */
+
+/* {{{ proto Trie Trie::prefixSearch( string prefix )
+ */
+PHP_METHOD(Trie, prefixSearch)
+{
+  triePrefixSearch(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+/* }}} */
+
+/* {{{ proto Trie Trie::map( callable func )
+ */
+PHP_METHOD(Trie, map)
+{
+  trieMap(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+/* }}} */
+
+/* {{{ proto Trie Trie::filter( callable func )
+ */
+PHP_METHOD(Trie, filter)
+{
+  trieFilter(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+/* }}} */
 
 /* ---- HatTrie methods ----- */
 
-/* {{{ proto HatTrie::__construct()
+/* {{{ proto HatTrie::__construct( int burstThreshold [, double loadFactor [, bool shrink ]] )
  */
 PHP_METHOD(HatTrie, __construct)
 {
@@ -120,7 +147,7 @@ PHP_METHOD(HatTrie, __construct)
 }
 /* }}} */
 
-/* {{{ proto bool HatTrie::insert(string key, mixed value)
+/* {{{ proto bool HatTrie::insert( string key [, mixed value ] )
  */
 PHP_METHOD(HatTrie, insert)
 {
@@ -128,7 +155,7 @@ PHP_METHOD(HatTrie, insert)
 }
 /* }}} */
 
-/* {{{ proto mixed HatTrie::search(string key)
+/* {{{ proto mixed HatTrie::search( string key )
  */
 PHP_METHOD(HatTrie, search)
 {
@@ -136,7 +163,7 @@ PHP_METHOD(HatTrie, search)
 }
 /* }}} */
 
-/* {{{ proto HatTrie HatTrie::prefixSearch(string prefix)
+/* {{{ proto HatTrie HatTrie::prefixSearch( string prefix )
  */
 PHP_METHOD(HatTrie, prefixSearch)
 {
@@ -144,7 +171,7 @@ PHP_METHOD(HatTrie, prefixSearch)
 }
 /* }}} */
 
-/* proto HatTrie HatTrie::map(callable func)
+/* proto HatTrie HatTrie::map( callable func )
  */
 PHP_METHOD(HatTrie, map)
 {
@@ -152,7 +179,7 @@ PHP_METHOD(HatTrie, map)
 }
 /* }}} */
 
-/* {{{ proto bool HatTrie::keyExists(string key)
+/* {{{ proto bool HatTrie::keyExists( string key )
  */
 PHP_METHOD(HatTrie, keyExists)
 {
@@ -160,7 +187,7 @@ PHP_METHOD(HatTrie, keyExists)
 }
 /* }}} */
 
-/* {{{ proto static HatTrie::fromArray(array entry)
+/* {{{ proto static HatTrie::fromArray( array entry [, int burstThreshold [, double loadFactor [, bool shrink ]]] )
  */
 PHP_METHOD(HatTrie, fromArray)
 {
@@ -176,7 +203,7 @@ PHP_METHOD(HatTrie, toArray)
 }
 /* }}} */
 
-/* {{{ proto HatTrie HatTrie::prefixErase(string prefix)
+/* {{{ proto HatTrie HatTrie::prefixErase( string prefix )
  */
 PHP_METHOD(HatTrie, prefixErase)
 {
@@ -184,7 +211,7 @@ PHP_METHOD(HatTrie, prefixErase)
 }
 /* }}} */
 
-/* {{{ proto void HatTrie::erase(string key)
+/* {{{ proto void HatTrie::erase( string key )
  */
 PHP_METHOD(HatTrie, erase)
 {
@@ -192,7 +219,7 @@ PHP_METHOD(HatTrie, erase)
 }
 /* }}} */
 
-/* {{{ proto HatTrie HatTrie::fold(callable function [, mixed accumulator ])
+/* {{{ proto HatTrie HatTrie::fold( callable function [, mixed accumulator ] )
  */
 PHP_METHOD(HatTrie, fold)
 {
@@ -200,7 +227,7 @@ PHP_METHOD(HatTrie, fold)
 }
 /* }}} */
 
-/* {{{ proto HatTrie HatTrie::filter(callable function)
+/* {{{ proto HatTrie HatTrie::filter( callable function )
  */
 PHP_METHOD(HatTrie, filter)
 {
@@ -216,7 +243,7 @@ PHP_METHOD(HatTrie, jsonSerialize)
 }
 /* }}} */
 
-/* {{{ proto mixed HatTrie::offsetGet(string key)
+/* {{{ proto mixed HatTrie::offsetGet( string key )
  */
 PHP_METHOD(HatTrie, offsetGet)
 {
@@ -224,7 +251,7 @@ PHP_METHOD(HatTrie, offsetGet)
 }
 /* }}} */
 
-/* {{{ proto bool HatTrie::offsetSet(string key, mixed value)
+/* {{{ proto bool HatTrie::offsetSet( string key [, mixed value ] )
  */
 PHP_METHOD(HatTrie, offsetSet)
 {
@@ -232,7 +259,7 @@ PHP_METHOD(HatTrie, offsetSet)
 }
 /* }}} */
 
-/* {{{ proto void HatTrie::offsetUnset(string key)
+/* {{{ proto void HatTrie::offsetUnset( string key )
  */
 PHP_METHOD(HatTrie, offsetUnset)
 {
@@ -240,7 +267,7 @@ PHP_METHOD(HatTrie, offsetUnset)
 }
 /* }}} */
 
-/* {{{ proto bool HatTrie::offsetExists(string key)
+/* {{{ proto bool HatTrie::offsetExists( string key )
  */
 PHP_METHOD(HatTrie, offsetExists)
 {
@@ -248,12 +275,15 @@ PHP_METHOD(HatTrie, offsetExists)
 }
 /* }}} */
 
+/* {{{ proto int HatTrie::size()
+ */
 PHP_METHOD(HatTrie, size)
 {
   trieCount(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
 }
+/* }}} */
 
-/* {{{ proto array longestPrefix(string prefix)
+/* {{{ proto array longestPrefix( string prefix )
  */
 PHP_METHOD(HatTrie, longestPrefix)
 {
@@ -261,13 +291,20 @@ PHP_METHOD(HatTrie, longestPrefix)
 }
 /* }}} */
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_hatconstruct, 0, 0, 2)
+#define ARGINFO_KEYONLY(key)                         \
+  ZEND_BEGIN_ARG_INFO_EX(arginfo_only##key, 0, 0, 1) \
+  ZEND_ARG_INFO(0, key)                              \
+  ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_hatconstruct, 0, 0, 3)
+ZEND_ARG_INFO(0, burstThreshold)
 ZEND_ARG_INFO(0, loadFactor)
 ZEND_ARG_INFO(0, shrink)
 ZEND_END_ARG_INFO();
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_hatfromarray, 0, 0, 3)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_hatfromarray, 0, 0, 4)
 ZEND_ARG_ARRAY_INFO(0, array, 0)
+ZEND_ARG_INFO(0, burstThreshold)
 ZEND_ARG_INFO(0, loadFactor)
 ZEND_ARG_INFO(0, shrink)
 ZEND_END_ARG_INFO();
@@ -277,9 +314,8 @@ ZEND_ARG_INFO(0, key)
 ZEND_ARG_INFO(0, entry)
 ZEND_END_ARG_INFO();
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_onlykey, 0, 0, 1)
-ZEND_ARG_INFO(0, key)
-ZEND_END_ARG_INFO();
+ARGINFO_KEYONLY(key);
+ARGINFO_KEYONLY(prefix);
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_onlyhash, 0, 0, 1)
 ZEND_ARG_ARRAY_INFO(0, array, 0)
@@ -304,9 +340,9 @@ static const zend_function_entry hattrie_methods[] = {
                             PHP_ME(HatTrie, keyExists, arginfo_onlykey, ZEND_ACC_PUBLIC)
                                 PHP_ME(HatTrie, search, arginfo_onlykey, ZEND_ACC_PUBLIC)
                                     PHP_ME(HatTrie, erase, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                        PHP_ME(HatTrie, prefixSearch, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                            PHP_ME(HatTrie, prefixErase, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                                PHP_ME(HatTrie, longestPrefix, arginfo_onlykey, ZEND_ACC_PUBLIC)
+                                        PHP_ME(HatTrie, prefixSearch, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
+                                            PHP_ME(HatTrie, prefixErase, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
+                                                PHP_ME(HatTrie, longestPrefix, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
                                                     PHP_ME(HatTrie, map, arginfo_onlycallable, ZEND_ACC_PUBLIC)
                                                         PHP_ME(HatTrie, offsetSet, arginfo_insert, ZEND_ACC_PUBLIC)
                                                             PHP_ME(HatTrie, offsetGet, arginfo_onlykey, ZEND_ACC_PUBLIC)
@@ -330,7 +366,10 @@ static const zend_function_entry trie_methods[] = {
                                             PHP_ME(Trie, offsetUnset, arginfo_onlykey, ZEND_ACC_PUBLIC)
                                                 PHP_ME(Trie, toArray, NULL, ZEND_ACC_PUBLIC)
                                                     PHP_ME(Trie, jsonSerialize, NULL, ZEND_ACC_PUBLIC)
-                                                        PHP_FE_END};
+                                                        PHP_ME(Trie, prefixSearch, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
+                                                            PHP_ME(Trie, map, arginfo_onlycallable, ZEND_ACC_PUBLIC)
+                                                                PHP_ME(Trie, filter, arginfo_onlycallable, ZEND_ACC_PUBLIC)
+                                                                    PHP_FE_END};
 
 /* {{{ PHP_RINIT_FUNCTION
  */
@@ -384,7 +423,14 @@ PHP_MINIT_FUNCTION(php_trie)
 
   zend_declare_class_constant_bool(phphattrie_ce, "SHRINK", sizeof("SHRINK") - 1, 1);
   zend_declare_class_constant_bool(phphattrie_ce, "NO_SHRINK", sizeof("NO_SHRINK") - 1, 0);
-  zend_declare_class_constant_double(phphattrie_ce, "DEFAULT_LOAD_FACTOR", sizeof("DEFAULT_LOAD_FACTOR") - 1, 8.0);
+  zend_declare_class_constant_double(phphattrie_ce,
+                                     "DEFAULT_LOAD_FACTOR",
+                                     sizeof("DEFAULT_LOAD_FACTOR") - 1,
+                                     DEFAULT_LOAD_FACTOR);
+  zend_declare_class_constant_long(phphattrie_ce,
+                                   "DEFAULT_BURST_THRESHOLD",
+                                   sizeof("DEFAULT_BURST_THRESHOLD") - 1,
+                                   DEFAULT_BURST_THRESHOLD);
 
 #ifdef HAVE_SPL
   phptrie_exception_ce = zend_register_internal_class_ex(

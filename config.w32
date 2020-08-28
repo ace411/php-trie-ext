@@ -1,0 +1,7 @@
+ARG_ENABLE("php_trie", "to enable php_trie support", "no");
+ARG_WITH("hattrie", "add hattrie library", "no");
+
+if (PHP_PHP_TRIE != "no") {
+  EXTENSION('php_trie', 'php_trie.cpp');
+  AC_DEFINE('HAVE_PHP_TRIE', 1);
+}

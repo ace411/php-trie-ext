@@ -73,6 +73,9 @@ class Trie implements Countable, ArrayAccess, JsonSerializable {
   public erase|offsetUnset( string $key ) : void;
   public keyExists|offsetExists( string $key ) : bool;
   public search|offsetGet( string $key ) : mixed;
+  public prefixSearch( string $prefix ) : HatTrie;
+  public filter( callable $predicate ) : HatTrie;
+  public map( callable $function ) : HatTrie;
   public size() : int;
   public toArray() : array;
 }
@@ -88,6 +91,12 @@ class Trie implements Countable, ArrayAccess, JsonSerializable {
 
 **`Trie::search`** - Returns the value that corresponds to the specified key
 
+**`Trie::prefixSearch`** - Returns a new HAT trie containing values that have a common arbitrary prefix
+
+**`Trie::filter`** - Returns trie containing entries that conform to a specified predicate
+
+**`Trie::map`** - Applies a transformation function to each entry in a trie
+
 **`Trie::size`** - Outputs the size of a trie
 
 **`Trie::toArray`** - Outputs a trie as an array
@@ -101,10 +110,11 @@ class HatTrie implements Countable, ArrayAccess, JsonSerializable {
   const bool SHRINK = true;
   const bool NO_SHRINK = false;
   const double DEFAULT_LOAD_FACTOR = 8.0;
+  const int DEFAULT_BURST_THRESHOLD = 16384;
 
   /* Methods */
-  public __construct( double $loadFactor = HatTrie::DEFAULT_LOAD_FACTOR [, bool $shrink = HatTrie::NO_SHRINK ] );
-  public static fromArray( array $array [, double $loadFactor = HatTrie::DEFAULT_LOAD_FACTOR [, bool $shrink = HatTrie::NO_SHRINK ]] ) : HatTrie;
+  public __construct( int $burstThreshold = HatTrie::DEFAULT_BURST_THRESHOLD [, double $loadFactor = HatTrie::DEFAULT_LOAD_FACTOR [, bool $shrink = HatTrie::NO_SHRINK ]] );
+  public static fromArray( array $array [, int $burstThreshold = HatTrie::DEFAULT_BURST_THRESHOLD [, double $loadFactor = HatTrie::DEFAULT_LOAD_FACTOR [, bool $shrink = HatTrie::NO_SHRINK ]]] ) : HatTrie;
   public insert|offsetSet( string $key [, mixed $entry ] ) : bool;
   public erase|offsetUnset( string $key ) : void;
   public keyExists|offsetExists( string $key ) : bool;
@@ -122,13 +132,7 @@ class HatTrie implements Countable, ArrayAccess, JsonSerializable {
 
 > This class is unusable without the HAT trie library.
 
-**`HatTrie::map`** - Applies a transformation function to each entry in a trie
-
 **`HatTrie::fold`** - Transforms trie into a single value
-
-**`HatTrie::filter`** - Returns trie containing entries that conform to a specified predicate
-
-**`HatTrie::prefixSearch`** - Returns a new HAT trie containing values that have a common arbitrary prefix
 
 **`HatTrie::prefixErase`** - Erases all entries whose keys have a common arbitrary prefix
 

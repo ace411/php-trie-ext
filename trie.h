@@ -93,6 +93,7 @@ namespace trie
 
       key++;
     }
+    history.shrink_to_fit(); // reduce memory usage
 
     current->val = val;
     current->history = history;
@@ -227,22 +228,87 @@ namespace trie
     {
       if (idx.second != nullptr)
       {
-        if (idx.second->val.type != NodeVal::isUndefined)
+        std::string history = idx.second->history;
+        history.shrink_to_fit();
+
+        NodeVal val = idx.second->val;
+
+        if (val.type != NodeVal::isUndefined)
         {
           // for the root node
-          if (idx.second->history.size() != 0)
+          if (history.size() != 0)
           {
-            res[idx.second->history] = idx.second->val;
+            res[history] = val;
           }
         }
 
         if (!hasChildren(idx.second))
         {
-          res[idx.second->history] = idx.second->val;
+          res[history] = val;
         }
         else
         {
           auto other = getPairs(idx.second);
+          res.insert(other.begin(), other.end());
+        }
+      }
+    }
+
+    return res;
+  }
+
+  /**
+   * @brief checks if a string exists inside another
+   * 
+   * @param needle 
+   * @param haystack 
+   * @return true 
+   * @return false 
+   */
+  bool strExists(std::string needle, std::string haystack)
+  {
+    std::string::size_type size = haystack.find(needle);
+
+    return size == std::string::npos ? false : true;
+  }
+
+  /**
+   * @brief searches trie for entries that match a specified prefix
+   * 
+   * @param trie 
+   * @param prefix 
+   * @return triemap 
+   */
+  triemap prefixLookup(TrieNode *&trie, std::string prefix)
+  {
+    triemap res; // TrieNode *res = newTrie();
+    TrieNode *current = trie;
+
+    for (auto idx : current->children)
+    {
+      if (idx.second != nullptr)
+      {
+        NodeVal val = idx.second->val;
+        std::string history = idx.second->history;
+        history.shrink_to_fit();
+
+        bool prefixCheck = strExists(prefix, history);
+
+        if (val.type != NodeVal::isUndefined && prefixCheck)
+        {
+          if (history.size() != 0)
+          {
+            res[history] = val;
+          }
+        }
+
+        if (!hasChildren(idx.second) && prefixCheck)
+        {
+          res[history] = val;
+        }
+        else
+        {
+          auto other = prefixLookup(idx.second, prefix);
           res.insert(other.begin(), other.end());
         }
       }
@@ -258,6 +324,17 @@ namespace trie
 
   public:
     Trie() {}
+    Trie(triemap trmap)
+    {
+      trie = newTrie();
+
+      // secondary iteration might be costly
+      for (auto idx : trmap)
+      {
+        insertItem(trie, idx.first.c_str(), idx.second);
+      }
+    }
+    Trie(TrieNode *obj) : trie(obj) {}
     ~Trie() { trie = nullptr; }
 
     bool insert(const char *key, NodeVal val)
@@ -291,6 +368,11 @@ namespace trie
     {
       return getPairs(trie).size();
     }
+
+    triemap prefixSearch(std::string prefix)
+    {
+      return prefixLookup(trie, prefix);
+    }
   };
 
   // HAT trie type alias
@@ -299,13 +381,13 @@ namespace trie
   {
   private:
     Htrie hatTrie;
-    float loadFactor = 8.0f;
 
   public:
     // HatTrie() {}
-    HatTrie(float factor = 8.0f) : loadFactor(factor)
+    HatTrie(float factor = 8.0f, size_t threshold = 16384)
     {
       hatTrie.max_load_factor(factor);
+      hatTrie.burst_threshold(threshold);
     }
     HatTrie(Htrie hat) : hatTrie(hat) {}
     ~HatTrie()
@@ -360,6 +442,16 @@ namespace trie
     void shrinkTrie()
     {
       hatTrie.shrink_to_fit();
+    }
+
+    void adjustLoadFactor(float factor = 8.0f)
+    {
+      hatTrie.max_load_factor(factor);
+    }
+
+    void adjustBurstThreshold(size_t threshold = 16384)
+    {
+      hatTrie.burst_threshold(threshold);
     }
   };
 }; // namespace trie
