@@ -137,6 +137,14 @@ PHP_METHOD(Trie, filter)
 }
 /* }}} */
 
+/* {{{ proto Trie Trie::merge([ Trie trie... ])
+ */
+PHP_METHOD(Trie, merge)
+{
+  trieMerge(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
+}
+/* }}} */
+
 /* ---- HatTrie methods ----- */
 
 /* {{{ proto HatTrie::__construct( int burstThreshold [, double loadFactor [, bool shrink ]] )
@@ -291,6 +299,14 @@ PHP_METHOD(HatTrie, longestPrefix)
 }
 /* }}} */
 
+/* {{{ proto HatTrie HatTrie::merge([ HatTrie trie... ])
+ */
+PHP_METHOD(HatTrie, merge)
+{
+  trieMerge(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
+}
+/* }}} */
+
 #define ARGINFO_KEYONLY(key)                         \
   ZEND_BEGIN_ARG_INFO_EX(arginfo_only##key, 0, 0, 1) \
   ZEND_ARG_INFO(0, key)                              \
@@ -330,6 +346,10 @@ ZEND_ARG_TYPE_INFO(0, func, IS_CALLABLE, 0)
 ZEND_ARG_INFO(0, accumulator)
 ZEND_END_ARG_INFO();
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_merge, 0, 0, IS_ARRAY, 0)
+ZEND_ARG_VARIADIC_TYPE_INFO(0, tries, IS_OBJECT, 0)
+ZEND_END_ARG_INFO();
+
 static const zend_function_entry hattrie_methods[] = {
     PHP_ME(HatTrie, __construct, arginfo_hatconstruct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
         PHP_ME(HatTrie, fromArray, arginfo_hatfromarray, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
@@ -350,7 +370,8 @@ static const zend_function_entry hattrie_methods[] = {
                                                                     PHP_ME(HatTrie, offsetUnset, arginfo_onlykey, ZEND_ACC_PUBLIC)
                                                                         PHP_ME(HatTrie, toArray, NULL, ZEND_ACC_PUBLIC)
                                                                             PHP_ME(HatTrie, jsonSerialize, NULL, ZEND_ACC_PUBLIC)
-                                                                                PHP_FE_END};
+                                                                                PHP_ME(HatTrie, merge, arginfo_merge, ZEND_ACC_PUBLIC)
+                                                                                    PHP_FE_END};
 
 static const zend_function_entry trie_methods[] = {
     PHP_ME(Trie, __construct, NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -369,7 +390,8 @@ static const zend_function_entry trie_methods[] = {
                                                         PHP_ME(Trie, prefixSearch, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
                                                             PHP_ME(Trie, map, arginfo_onlycallable, ZEND_ACC_PUBLIC)
                                                                 PHP_ME(Trie, filter, arginfo_onlycallable, ZEND_ACC_PUBLIC)
-                                                                    PHP_FE_END};
+                                                                    PHP_ME(Trie, merge, arginfo_merge, ZEND_ACC_PUBLIC)
+                                                                        PHP_FE_END};
 
 /* {{{ PHP_RINIT_FUNCTION
  */

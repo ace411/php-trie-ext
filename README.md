@@ -73,9 +73,10 @@ class Trie implements Countable, ArrayAccess, JsonSerializable {
   public erase|offsetUnset( string $key ) : void;
   public keyExists|offsetExists( string $key ) : bool;
   public search|offsetGet( string $key ) : mixed;
-  public prefixSearch( string $prefix ) : HatTrie;
-  public filter( callable $predicate ) : HatTrie;
-  public map( callable $function ) : HatTrie;
+  public prefixSearch( string $prefix ) : Trie;
+  public filter( callable $predicate ) : Trie;
+  public map( callable $function ) : Trie;
+  public merge([ Trie $tries... ]) : Trie;
   public size() : int;
   public toArray() : array;
 }
@@ -96,6 +97,8 @@ class Trie implements Countable, ArrayAccess, JsonSerializable {
 **`Trie::filter`** - Returns trie containing entries that conform to a specified predicate
 
 **`Trie::map`** - Applies a transformation function to each entry in a trie
+
+**`Trie::merge`** - Merges multiple tries into a single one
 
 **`Trie::size`** - Outputs the size of a trie
 
@@ -125,6 +128,7 @@ class HatTrie implements Countable, ArrayAccess, JsonSerializable {
   public map( callable $function ) : HatTrie;
   public filter( callable $predicate ) : HatTrie;
   public fold( callable $function [, mixed $accumulator ] ) : mixed;
+  public merge([ HatTrie $tries... ]) : HatTrie;
   public size() : int;
   public toArray() : array;
 }

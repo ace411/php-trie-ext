@@ -655,6 +655,128 @@ static void trieCount(INTERNAL_FUNCTION_PARAMETERS, long type)
   }
 }
 
+/**
+ * @brief PHP trie/HAT trie merge function
+ * 
+ * @param type 
+ */
+static void trieMerge(INTERNAL_FUNCTION_PARAMETERS, long type)
+{
+  int argc; // variadic argument count
+  zval *args = NULL;
+
+  zval *obj = getThis();
+  phphattrie_object *hat;
+  phptrie_object *trie;
+
+  HatTrie *rethat;
+  Trie *rettrie;
+
+  ZEND_PARSE_PARAMETERS_START(0, -1)
+  Z_PARAM_VARIADIC('+', args, argc)
+  ZEND_PARSE_PARAMETERS_END();
+
+  switch (type)
+  {
+  case IS_HATTRIE:
+    hat = Z_HATOBJ_P(obj);
+    break;
+
+  case IS_TRIE:
+    trie = Z_TRIEOBJ_P(obj);
+    break;
+  }
+  if (trie != NULL || hat != NULL)
+  {
+    switch (type)
+    {
+    case IS_HATTRIE:
+      rethat = new HatTrie(hat->loadFactor, hat->burstThreshold);
+      rethat->merge(hat->hat->all());
+      break;
+
+    case IS_TRIE:
+      rettrie = new Trie();
+      rettrie->merge(trie->trie->all());
+      break;
+    }
+
+    if (argc == 0)
+    {
+      switch (type)
+      {
+      case IS_HATTRIE:
+        ZVAL_OBJ(return_value, phphattrie_object_new_ex(hat->hat,
+                                                        hat->burstThreshold,
+                                                        hat->loadFactor,
+                                                        hat->shrink));
+        break;
+
+      case IS_TRIE:
+        ZVAL_OBJ(return_value, phptrie_object_new_ex(trie->trie));
+        break;
+      }
+    }
+
+    // check validity of variadic function argument
+#define VARIADIC_CHECK(type, arg, tmp)                                                              \
+  if (Z_TYPE_P(arg) != IS_OBJECT || tmp == NULL || !instanceof_function(Z_OBJCE_P(arg), type##_ce)) \
+  {                                                                                                 \
+    TRIE_THROW("Only trie elements are allowed");                                                   \
+  }
+
+    // handle potential memory allocation error
+#define MERGE_ALLOC(trie, obj)                                      \
+  try                                                               \
+  {                                                                 \
+    trie->merge(obj);                                               \
+  }                                                                 \
+  catch (const std::bad_alloc &exp)                                 \
+  {                                                                 \
+    std::string err((std::string)exp.what() + " allocation error"); \
+    TRIE_THROW(err.c_str());                                        \
+  }
+
+    for (auto idx = 0; idx < argc; ++idx)
+    {
+      zval *arg = args + idx; // next argument
+      phphattrie_object *tmphat;
+      phptrie_object *tmptrie;
+
+      switch (type)
+      {
+      case IS_HATTRIE:
+        tmphat = Z_HATOBJ_P(arg);
+        VARIADIC_CHECK(phphattrie, arg, tmphat);
+        MERGE_ALLOC(rethat, tmphat->hat->all());
+        break;
+
+      case IS_TRIE:
+        tmptrie = Z_TRIEOBJ_P(arg);
+        VARIADIC_CHECK(phptrie, arg, tmptrie);
+        MERGE_ALLOC(rettrie, tmptrie->trie->all());
+        break;
+      }
+
+      i_zval_ptr_dtor(arg);
+    }
+
+    switch (type)
+    {
+    case IS_HATTRIE:
+      ZVAL_OBJ(return_value, phphattrie_object_new_ex(rethat,
+                                                      hat->burstThreshold,
+                                                      hat->loadFactor,
+                                                      hat->shrink));
+      break;
+
+    case IS_TRIE:
+      ZVAL_OBJ(return_value, phptrie_object_new_ex(rettrie));
+      break;
+    }
+  }
+}
+
 /* ---- Trie routines ----- */
 
 /**
