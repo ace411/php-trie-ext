@@ -373,6 +373,16 @@ namespace trie
     {
       return prefixLookup(trie, prefix);
     }
+
+    Trie *merge(triemap other)
+    {
+      for (auto idx = other.begin(); idx != other.end(); ++idx)
+      {
+        insertItem(trie, idx->first.c_str(), idx->second);
+      }
+
+      return new Trie(trie);
+    }
   };
 
   // HAT trie type alias
@@ -452,6 +462,18 @@ namespace trie
     void adjustBurstThreshold(size_t threshold = 16384)
     {
       hatTrie.burst_threshold(threshold);
+    }
+
+    HatTrie *merge(Htrie map)
+    {
+      std::string buffer;
+      for (auto idx = map.begin(); idx != map.end(); ++idx)
+      {
+        idx.key(buffer);
+        hatTrie[buffer] = idx.value();
+      }
+
+      return new HatTrie(hatTrie);
     }
   };
 }; // namespace trie
