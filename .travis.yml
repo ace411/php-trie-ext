@@ -3,17 +3,16 @@ language: php
 php:
   - 7.3
   - 7.4
-  - nightly
 
-sudo: enabled
+os: linux
+
+dist: bionic
 
 # install hat-trie library in order to test HAT trie
 before_script:
   - cd /usr/include
   - sudo git clone https://github.com/Tessil/hat-trie.git
-  - echo $TRAVIS_BUILD_DIR && cd $TRAVIS_BUILD_DIR
-  # - git clone -n https://github.com/Tessil/hat-trie.git --depth 1 && cd hat-trie && git checkout HEAD include/tsl/
-  # - sudo mv hat-trie /usr/include/hat-trie
+  - cd $TRAVIS_BUILD_DIR
 
 script:
   - phpize
