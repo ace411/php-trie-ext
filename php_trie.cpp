@@ -476,15 +476,15 @@ PHP_MINIT_FUNCTION(php_trie)
  */
 zend_module_entry php_trie_module_entry = {
     STANDARD_MODULE_HEADER,
-    "php_trie",                    /* Extension name */
-    trie_methods,                  /* zend_function_entry */
-    PHP_MINIT(php_trie),           /* PHP_MINIT - Module initialization */
-    NULL,                          /* PHP_MSHUTDOWN - Module shutdown */
-    PHP_RINIT(php_trie),           /* PHP_RINIT - Request initialization */
-    NULL,                          /* PHP_RSHUTDOWN - Request shutdown */
-    PHP_MINFO(php_trie),           /* PHP_MINFO - Module info */
-#if ZEND_MODULE_API_NO >= 20181206 // PHP >= 7.3.0
-    PHP_TRIE_EXT_EXTVER,           /* Version */
+    "php_trie",                          /* Extension name */
+    trie_methods,                        /* zend_function_entry */
+    PHP_MINIT(php_trie),                 /* PHP_MINIT - Module initialization */
+    NULL,                                /* PHP_MSHUTDOWN - Module shutdown */
+    PHP_RINIT(php_trie),                 /* PHP_RINIT - Request initialization */
+    NULL,                                /* PHP_RSHUTDOWN - Request shutdown */
+    PHP_MINFO(php_trie),                 /* PHP_MINFO - Module info */
+#if ZEND_MODULE_API_NO >= ZEND_API_PHP73 // PHP >= 7.3.0
+    PHP_TRIE_EXT_EXTVER,                 /* Version */
 #endif
     STANDARD_MODULE_PROPERTIES};
 /* }}} */
