@@ -142,6 +142,12 @@ class HatTrie implements Countable, ArrayAccess, JsonSerializable {
 
 **`HatTrie::longestPrefix`** - Computes the longest match prefix and outputs the result as a hashtable
 
+### Important concepts
+
+**Load factor** - A measure of the balance between speed and memory usage (lower load factor means greater iteration speed and a higher one means lower memory consumption)
+
+**Burst threshold** - The maximum size of a bucket hash node before a burst (spawning of new node-parented trie buckets) occurs
+
 ## Contributing
 
 Consider buying me a coffee if you appreciate the offerings of the project and/or would like to provide more impetus for me to continue working on it.

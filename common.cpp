@@ -330,6 +330,13 @@ static int phptrie_count_elements(zval *obj, zend_long *count)
     break;                                 \
   }
 
+/* For compatibility with newer PHP versions (7.4 and greater) */
+#define FCALL_CACHE_RELEASE(fncache)         \
+  if (ZEND_MODULE_API_NO >= ZEND_API_PHP74)  \
+  {                                          \
+    zend_release_fcall_info_cache(&fncache); \
+  }
+
 /* ---- common routines ----- */
 
 /**
@@ -514,6 +521,8 @@ static void trieSearch(INTERNAL_FUNCTION_PARAMETERS, long type)
   if (trie != NULL || hat != NULL)
   {
     NodeVal val;
+    zval temp;
+
     switch (type)
     {
     case IS_HATTRIE:
@@ -533,28 +542,8 @@ static void trieSearch(INTERNAL_FUNCTION_PARAMETERS, long type)
       break;
     }
 
-    switch (val.type)
-    {
-    case NodeVal::isNull:
-      RETURN_NULL();
-      break;
-
-    case NodeVal::isBool:
-      RETURN_BOOL(val.bv);
-      break;
-
-    case NodeVal::isLong:
-      RETURN_LONG(val.lv);
-      break;
-
-    case NodeVal::isString:
-      RETURN_STRING(val.strv);
-      break;
-
-    case NodeVal::isFloat:
-      RETURN_DOUBLE(val.fv);
-      break;
-    }
+    TRIE_NODE_TO_ZVAL(temp, val);
+    RETURN_ZVAL(&temp, 1, 0);
   }
 
   zend_string_release(key);
@@ -941,7 +930,8 @@ static void trieMap(INTERNAL_FUNCTION_PARAMETERS)
       ZVAL_TO_TRIE_NODE(result, ins);
       cpptrie->insert(idx.first.c_str(), ins);
     }
-    zend_release_fcall_info_cache(&fci_cache);
+    FCALL_CACHE_RELEASE(fci_cache);
+    // zend_release_fcall_info_cache(&fci_cache);
 
     ZVAL_OBJ(return_value, phptrie_object_new_ex(cpptrie));
   }
@@ -982,7 +972,8 @@ static void trieFilter(INTERNAL_FUNCTION_PARAMETERS)
       i_zval_ptr_dtor(&arg);
       FILTER_OP(cpptrie, result, idx.first.c_str(), idx.second);
     }
-    zend_release_fcall_info_cache(&fci_cache);
+    FCALL_CACHE_RELEASE(fci_cache);
+    // zend_release_fcall_info_cache(&fci_cache);
 
     ZVAL_OBJ(return_value, phptrie_object_new_ex(cpptrie));
   }
@@ -1279,7 +1270,8 @@ static void hatFold(INTERNAL_FUNCTION_PARAMETERS)
       ZVAL_COPY_VALUE(return_value, &result);
     }
 
-    zend_release_fcall_info_cache(&fci_cache);
+    FCALL_CACHE_RELEASE(fci_cache);
+    // zend_release_fcall_info_cache(&fci_cache);
   }
 }
 
@@ -1326,7 +1318,8 @@ static void hatMap(INTERNAL_FUNCTION_PARAMETERS)
       ZVAL_TO_TRIE_NODE(result, ins);
       hattrie->insert(buffer.c_str(), ins);
     }
-    zend_release_fcall_info_cache(&fci_cache);
+    FCALL_CACHE_RELEASE(fci_cache);
+    // zend_release_fcall_info_cache(&fci_cache);
 
     if (hat->shrink)
     {
@@ -1378,7 +1371,8 @@ static void hatFilter(INTERNAL_FUNCTION_PARAMETERS)
       i_zval_ptr_dtor(&arg);
       FILTER_OP(hattrie, result, buffer.c_str(), idx.value());
     }
-    zend_release_fcall_info_cache(&fci_cache);
+    FCALL_CACHE_RELEASE(fci_cache);
+    // zend_release_fcall_info_cache(&fci_cache);
 
     if (hat->shrink)
     {
