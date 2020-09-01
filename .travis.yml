@@ -9,8 +9,10 @@ sudo: enabled
 
 # install hat-trie library in order to test HAT trie
 before_script:
-  - git clone -n https://github.com/Tessil/hat-trie.git --depth 1 && git checkout HEAD include/tsl/
-  - sudo mv hat-trie /usr/include/hat-trie
+  - cd /usr/include
+  - sudo git clone https://github.com/Tessil/hat-trie.git
+  # - git clone -n https://github.com/Tessil/hat-trie.git --depth 1 && cd hat-trie && git checkout HEAD include/tsl/
+  # - sudo mv hat-trie /usr/include/hat-trie
 
 script:
   - phpize
