@@ -10,8 +10,6 @@ Trie and HAT trie data structures for PHP.
 - PHP 7.3 or greater
 - [HAT Trie library](https://github.com/Tessil/hat-trie) (optional)
 
-**Note:** Only POSIX Operating Systems are currently supported.
-
 ## Installation
 
 To install the extension, type the following in a console of your choosing:
@@ -60,6 +58,8 @@ if (!isset($trie['boom'])) {
 
 unset($trie['bar']);
 ```
+
+> Please check out the [examples](https://github.com/ace411/php-trie-ext/tree/master/examples) directory for more sample material
 
 ## API
 
