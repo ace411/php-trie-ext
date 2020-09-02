@@ -1,6 +1,8 @@
 # php_trie
 
-A simple trie extension for PHP.
+[![Build Status](https://travis-ci.org/ace411/php-trie-ext.svg?branch=master)](https://travis-ci.org/ace411/php-trie-ext)
+
+Trie and HAT trie data structures for PHP.
 
 ## Requirements
 
