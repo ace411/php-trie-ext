@@ -231,6 +231,18 @@ static int phptrie_count_elements(zval *obj, zend_long *count)
   TRIE_OBJECT_COUNT(trie, phptrie, obj, count);
 }
 
+/**
+ * @brief fcall cache release function for compatibility with newer and older versions of PHP
+ * 
+ * @param fncache 
+ */
+static void fcall_cache_release(zend_fcall_info_cache fncache)
+{
+#if ZEND_MODULE_API_NO >= ZEND_API_PHP74
+  zend_release_fcall_info_cache(&fncache);
+#endif
+}
+
 // macro to convert Trie branch to hashtable entry
 #define TRIE_TO_ARRAY(retval, key, value)                   \
   switch (value.type)                                       \
@@ -328,13 +340,6 @@ static int phptrie_count_elements(zval *obj, zend_long *count)
   default:                                 \
     TRIE_THROW("Filter operation failed"); \
     break;                                 \
-  }
-
-/* For compatibility with newer PHP versions (7.4 and greater) */
-#define FCALL_CACHE_RELEASE(fncache)         \
-  if (ZEND_MODULE_API_NO >= ZEND_API_PHP74)  \
-  {                                          \
-    zend_release_fcall_info_cache(&fncache); \
   }
 
 /* ---- common routines ----- */
@@ -930,7 +935,7 @@ static void trieMap(INTERNAL_FUNCTION_PARAMETERS)
       ZVAL_TO_TRIE_NODE(result, ins);
       cpptrie->insert(idx.first.c_str(), ins);
     }
-    FCALL_CACHE_RELEASE(fci_cache);
+    fcall_cache_release(fci_cache);
     // zend_release_fcall_info_cache(&fci_cache);
 
     ZVAL_OBJ(return_value, phptrie_object_new_ex(cpptrie));
@@ -972,7 +977,7 @@ static void trieFilter(INTERNAL_FUNCTION_PARAMETERS)
       i_zval_ptr_dtor(&arg);
       FILTER_OP(cpptrie, result, idx.first.c_str(), idx.second);
     }
-    FCALL_CACHE_RELEASE(fci_cache);
+    fcall_cache_release(fci_cache);
     // zend_release_fcall_info_cache(&fci_cache);
 
     ZVAL_OBJ(return_value, phptrie_object_new_ex(cpptrie));
@@ -1270,7 +1275,7 @@ static void hatFold(INTERNAL_FUNCTION_PARAMETERS)
       ZVAL_COPY_VALUE(return_value, &result);
     }
 
-    FCALL_CACHE_RELEASE(fci_cache);
+    fcall_cache_release(fci_cache);
     // zend_release_fcall_info_cache(&fci_cache);
   }
 }
@@ -1318,7 +1323,7 @@ static void hatMap(INTERNAL_FUNCTION_PARAMETERS)
       ZVAL_TO_TRIE_NODE(result, ins);
       hattrie->insert(buffer.c_str(), ins);
     }
-    FCALL_CACHE_RELEASE(fci_cache);
+    fcall_cache_release(fci_cache);
     // zend_release_fcall_info_cache(&fci_cache);
 
     if (hat->shrink)
@@ -1371,7 +1376,7 @@ static void hatFilter(INTERNAL_FUNCTION_PARAMETERS)
       i_zval_ptr_dtor(&arg);
       FILTER_OP(hattrie, result, buffer.c_str(), idx.value());
     }
-    FCALL_CACHE_RELEASE(fci_cache);
+    fcall_cache_release(fci_cache);
     // zend_release_fcall_info_cache(&fci_cache);
 
     if (hat->shrink)
