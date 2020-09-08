@@ -1,5 +1,13 @@
 --TEST--
 prefixSearch creates new trie containing entries whose keys have a common arbitrary prefix
+--SKIPIF--
+<?php
+try {
+  $trie = new HatTrie;
+} catch (TrieException $exp) {
+  echo $exp->getMessage();
+}
+?>
 --FILE--
 <?php
 $trie = HatTrie::fromArray([
