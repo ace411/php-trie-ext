@@ -1,5 +1,13 @@
 --TEST--
 HAT trie map operation works
+--SKIPIF--
+<?php
+try {
+  $trie = new HatTrie;
+} catch (TrieException $exp) {
+  echo $exp->getMessage();
+}
+?>
 --FILE--
 <?php
 $trie = new HatTrie;

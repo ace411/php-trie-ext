@@ -1,5 +1,13 @@
 --TEST--
 longestPrefix computes the longest possible matching prefix and outputs the result as an array
+--SKIPIF--
+<?php
+try {
+  $trie = new HatTrie;
+} catch (TrieException $exp) {
+  echo $exp->getMessage();
+}
+?>
 --FILE--
 <?php
 $trie = HatTrie::fromArray([

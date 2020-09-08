@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.10.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
+ <name>php_trie</name>
+ <channel>pecl.php.net</channel>
+ <summary>PHP Trie extension</summary>
+ <description>Trie and HAT trie data structures for PHP.</description>
+ <lead>
+  <name>Lochemem Bruno Michael</name>
+  <user>agiroLoki95</user>
+  <email>lochbm@yahoo.com</email>
+  <active>yes</active>
+ </lead>
+ <date>2020-09-08</date>
+ <version>
+  <release>0.1.0</release>
+  <api>0.1.0</api>
+ </version>
+ <stability>
+  <release>stable</release>
+  <api>stable</api>
+ </stability>
+ <license uri="http://www.php.net/license">PHP</license>
+ <notes>
+- First stable release
+ </notes>
+ <contents>
+  <dir name="/">
+   <file name="LICENSE" role="doc" />
+   <file name="README.md" role="doc" />
+   <file name="config.m4" role="src" />
+   <file name="config.w32" role="src" />
+   <file name="php_trie.cpp" role="src" />
+   <file name="php_trie_ext.h" role="src" />
+   <file name="trie.h" role="src" />
+   <file name="common.cpp" role="src" />
+   <file name="tests/trie/countable.phpt" role="test" />
+   <file name="tests/trie/erase.phpt" role="test" />
+   <file name="tests/trie/filter.phpt" role="test" />
+   <file name="tests/trie/fromArray.phpt" role="test" />
+   <file name="tests/trie/fromArray-fail.phpt" role="test" />
+   <file name="tests/trie/insert.phpt" role="test" />
+   <file name="tests/trie/insert-fail.phpt" role="test" />
+   <file name="tests/trie/load.phpt" role="test" />
+   <file name="tests/trie/map.phpt" role="test" />
+   <file name="tests/trie/merge.phpt" role="test" />
+   <file name="tests/trie/merge-fail.phpt" role="test" />
+   <file name="tests/trie/prefixSearch.phpt" role="test" />
+   <file name="tests/trie/prefixSearch-fail.phpt" role="test" />
+   <file name="tests/trie/search.phpt" role="test" />
+   <file name="tests/trie/size.phpt" role="test" />
+   <file name="tests/trie/toArray.phpt" role="test" />
+   <file name="tests/hat_trie/burst-threshold.phpt" role="test" />
+   <file name="tests/hat_trie/countable.phpt" role="test" />
+   <file name="tests/hat_trie/erase.phpt" role="test" />
+   <file name="tests/hat_trie/filter.phpt" role="test" />
+   <file name="tests/hat_trie/fold.phpt" role="test" />
+   <file name="tests/hat_trie/fromArray.phpt" role="test" />
+   <file name="tests/hat_trie/fromArray-fail.phpt" role="test" />
+   <file name="tests/hat_trie/insert.phpt" role="test" />
+   <file name="tests/hat_trie/insert-fail.phpt" role="test" />
+   <file name="tests/hat_trie/load.phpt" role="test" />
+   <file name="tests/hat_trie/load-factor.phpt" role="test" />
+   <file name="tests/hat_trie/longestPrefix.phpt" role="test" />
+   <file name="tests/hat_trie/map.phpt" role="test" />
+   <file name="tests/hat_trie/merge.phpt" role="test" />
+   <file name="tests/hat_trie/merge-fail.phpt" role="test" />
+   <file name="tests/hat_trie/prefixErase.phpt" role="test" />
+   <file name="tests/hat_trie/prefixSearch.phpt" role="test" />
+   <file name="tests/hat_trie/prefixSearch-fail.phpt" role="test" />
+   <file name="tests/hat_trie/search.phpt" role="test" />
+   <file name="tests/hat_trie/shrink-trie.phpt" role="test" />
+   <file name="tests/hat_trie/size.phpt" role="test" />
+   <file name="tests/hat_trie/toArray.phpt" role="test" />
+  </dir>
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>7.3.0</min>
+    <max>7.4.99</max>
+   </php>
+   <pearinstaller>
+    <min>1.4.1</min>
+   </pearinstaller>
+  </required>
+ </dependencies>
+ <providesextension>php_trie</providesextension>
+ <extsrcrelease />
+</package>
