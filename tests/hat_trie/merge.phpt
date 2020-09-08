@@ -1,5 +1,13 @@
 --TEST--
 merging two HAT tries works
+--SKIPIF--
+<?php
+try {
+  $trie = new HatTrie;
+} catch (TrieException $exp) {
+  echo $exp->getMessage();
+}
+?>
 --FILE--
 <?php
 $fst = HatTrie::fromArray([

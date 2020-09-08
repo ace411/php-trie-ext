@@ -1,5 +1,13 @@
 --TEST--
 Setting the load-factor to anything other than default works
+--SKIPIF--
+<?php
+try {
+  $trie = new HatTrie;
+} catch (TrieException $exp) {
+  echo $exp->getMessage();
+}
+?>
 --FILE--
 <?php
 $trie = new HatTrie(HatTrie::DEFAULT_BURST_THRESHOLD, 4.0);

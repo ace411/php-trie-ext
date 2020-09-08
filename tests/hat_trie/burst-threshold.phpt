@@ -1,5 +1,13 @@
 --TEST--
 Adjusting the burst threshold to anything other than default works
+--SKIPIF--
+<?php
+try {
+  $trie = new HatTrie;
+} catch (TrieException $exp) {
+  echo $exp->getMessage();
+}
+?>
 --FILE--
 <?php
 $trie = new HatTrie(1024);

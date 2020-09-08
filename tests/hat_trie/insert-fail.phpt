@@ -1,5 +1,13 @@
 --TEST--
-inserting invalid data type into HatTrie throws TrieException 
+inserting invalid data type into HatTrie throws TrieException
+--SKIPIF--
+<?php
+try {
+  $trie = new HatTrie;
+} catch (TrieException $exp) {
+  echo $exp->getMessage();
+}
+?> 
 --FILE--
 <?php
 $trie = new HatTrie;
