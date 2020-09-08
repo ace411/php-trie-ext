@@ -1,5 +1,13 @@
 --TEST--
 fromArray throws TrieException when array destined for HAT trie is empty 
+--SKIPIF--
+<?php
+try {
+  $trie = new HatTrie;
+} catch (TrieException $exp) {
+  echo $exp->getMessage();
+}
+?>
 --FILE--
 <?php
 try {

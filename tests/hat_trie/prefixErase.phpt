@@ -1,5 +1,13 @@
 --TEST--
 prefixErase purges items whose keys match an arbitrary prefix
+--SKIPIF--
+<?php
+try {
+  $trie = new HatTrie;
+} catch (TrieException $exp) {
+  echo $exp->getMessage();
+}
+?>
 --FILE--
 <?php
 $trie = new HatTrie;

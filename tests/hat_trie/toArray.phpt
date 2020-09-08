@@ -1,5 +1,13 @@
 --TEST--
 toArray converts HAT trie to PHP hashtable
+--SKIPIF--
+<?php
+try {
+  $trie = new HatTrie;
+} catch (TrieException $exp) {
+  echo $exp->getMessage();
+}
+?>
 --FILE--
 <?php
 $trie = new HatTrie;
