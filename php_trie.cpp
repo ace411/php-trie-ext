@@ -21,7 +21,7 @@ PHP_METHOD(Trie, __construct)
  */
 PHP_METHOD(Trie, insert)
 {
-  trieInsert(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
+  insert(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
 }
 /* }}} */
 
@@ -29,7 +29,7 @@ PHP_METHOD(Trie, insert)
  */
 PHP_METHOD(Trie, keyExists)
 {
-  trieKeyExists(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
+  keyExists(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
 }
 /* }}} */
 
@@ -45,7 +45,7 @@ PHP_METHOD(Trie, fromArray)
  */
 PHP_METHOD(Trie, search)
 {
-  trieSearch(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
+  search(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
 }
 /* }}} */
 
@@ -53,7 +53,7 @@ PHP_METHOD(Trie, search)
  */
 PHP_METHOD(Trie, erase)
 {
-  trieKeyDelete(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
+  keyDelete(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
 }
 /* }}} */
 
@@ -61,7 +61,7 @@ PHP_METHOD(Trie, erase)
  */
 PHP_METHOD(Trie, offsetSet)
 {
-  trieInsert(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
+  insert(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
 }
 /* }}} */
 
@@ -69,7 +69,7 @@ PHP_METHOD(Trie, offsetSet)
  */
 PHP_METHOD(Trie, offsetGet)
 {
-  trieSearch(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
+  search(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
 }
 /* }}} */
 
@@ -77,7 +77,7 @@ PHP_METHOD(Trie, offsetGet)
  */
 PHP_METHOD(Trie, size)
 {
-  trieCount(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
+  count(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
 }
 /* }}} */
 
@@ -85,7 +85,7 @@ PHP_METHOD(Trie, size)
  */
 PHP_METHOD(Trie, offsetExists)
 {
-  trieKeyExists(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
+  keyExists(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
 }
 /* }}} */
 
@@ -93,7 +93,7 @@ PHP_METHOD(Trie, offsetExists)
  */
 PHP_METHOD(Trie, offsetUnset)
 {
-  trieKeyDelete(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
+  keyDelete(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_TRIE);
 }
 /* }}} */
 
@@ -159,7 +159,7 @@ PHP_METHOD(HatTrie, __construct)
  */
 PHP_METHOD(HatTrie, insert)
 {
-  trieInsert(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
+  insert(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
 }
 /* }}} */
 
@@ -167,7 +167,7 @@ PHP_METHOD(HatTrie, insert)
  */
 PHP_METHOD(HatTrie, search)
 {
-  trieSearch(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
+  search(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
 }
 /* }}} */
 
@@ -191,7 +191,7 @@ PHP_METHOD(HatTrie, map)
  */
 PHP_METHOD(HatTrie, keyExists)
 {
-  trieKeyExists(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
+  keyExists(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
 }
 /* }}} */
 
@@ -223,7 +223,7 @@ PHP_METHOD(HatTrie, prefixErase)
  */
 PHP_METHOD(HatTrie, erase)
 {
-  trieKeyDelete(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
+  keyDelete(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
 }
 /* }}} */
 
@@ -255,7 +255,7 @@ PHP_METHOD(HatTrie, jsonSerialize)
  */
 PHP_METHOD(HatTrie, offsetGet)
 {
-  trieSearch(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
+  search(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
 }
 /* }}} */
 
@@ -263,7 +263,7 @@ PHP_METHOD(HatTrie, offsetGet)
  */
 PHP_METHOD(HatTrie, offsetSet)
 {
-  trieInsert(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
+  insert(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
 }
 /* }}} */
 
@@ -271,7 +271,7 @@ PHP_METHOD(HatTrie, offsetSet)
  */
 PHP_METHOD(HatTrie, offsetUnset)
 {
-  trieKeyDelete(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
+  keyDelete(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
 }
 /* }}} */
 
@@ -279,7 +279,7 @@ PHP_METHOD(HatTrie, offsetUnset)
  */
 PHP_METHOD(HatTrie, offsetExists)
 {
-  trieKeyExists(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
+  keyExists(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
 }
 /* }}} */
 
@@ -287,7 +287,7 @@ PHP_METHOD(HatTrie, offsetExists)
  */
 PHP_METHOD(HatTrie, size)
 {
-  trieCount(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
+  count(INTERNAL_FUNCTION_PARAM_PASSTHRU, IS_HATTRIE);
 }
 /* }}} */
 
