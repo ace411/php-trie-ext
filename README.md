@@ -12,7 +12,13 @@ Trie and HAT trie data structures for PHP.
 
 ## Installation
 
-To install the extension, type the following in a console of your choosing:
+`php-trie` is part of the PECL registry. If you intend to install the module via PECL, the following directive should suffice:
+
+```sh
+pecl install php_trie
+```
+
+To install the extension via Git, type the following in a console of your choosing:
 
 ```sh
 git clone https://github.com/ace411/php_trie.git <directory>
