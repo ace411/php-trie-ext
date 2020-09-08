@@ -349,7 +349,7 @@ static void fcall_cache_release(zend_fcall_info_cache fncache)
  * 
  * @param type 
  */
-static void trieInsert(INTERNAL_FUNCTION_PARAMETERS, long type)
+static void insert(INTERNAL_FUNCTION_PARAMETERS, long type)
 {
   zend_string *key;
   zval *entry;
@@ -447,7 +447,7 @@ static void trieInsert(INTERNAL_FUNCTION_PARAMETERS, long type)
  * 
  * @param type 
  */
-static void trieKeyExists(INTERNAL_FUNCTION_PARAMETERS, long type)
+static void keyExists(INTERNAL_FUNCTION_PARAMETERS, long type)
 {
   zend_string *key;
 
@@ -499,7 +499,7 @@ static void trieKeyExists(INTERNAL_FUNCTION_PARAMETERS, long type)
  * 
  * @param type 
  */
-static void trieSearch(INTERNAL_FUNCTION_PARAMETERS, long type)
+static void search(INTERNAL_FUNCTION_PARAMETERS, long type)
 {
   zend_string *key;
 
@@ -559,7 +559,7 @@ static void trieSearch(INTERNAL_FUNCTION_PARAMETERS, long type)
  * 
  * @param type 
  */
-static void trieKeyDelete(INTERNAL_FUNCTION_PARAMETERS, long type)
+static void keyDelete(INTERNAL_FUNCTION_PARAMETERS, long type)
 {
   zend_string *key;
 
@@ -615,7 +615,7 @@ static void trieKeyDelete(INTERNAL_FUNCTION_PARAMETERS, long type)
  * 
  * @param type 
  */
-static void trieCount(INTERNAL_FUNCTION_PARAMETERS, long type)
+static void count(INTERNAL_FUNCTION_PARAMETERS, long type)
 {
   zval *obj = getThis();
   phptrie_object *trie;
