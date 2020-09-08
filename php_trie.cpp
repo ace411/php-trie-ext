@@ -405,6 +405,20 @@ PHP_RINIT_FUNCTION(php_trie)
 }
 /* }}} */
 
+/**
+ * @brief check if HAT trie library is available
+ * 
+ * @return const char* 
+ */
+static const char *hatTrieCheck()
+{
+#ifndef TSL_HTRIE_MAP_H
+  return "no";
+#else
+  return "yes";
+#endif
+}
+
 /* {{{ PHP_MINFO_FUNCTION
  */
 PHP_MINFO_FUNCTION(php_trie)
@@ -413,6 +427,8 @@ PHP_MINFO_FUNCTION(php_trie)
   php_info_print_table_header(2, "php_trie support", "enabled");
   php_info_print_table_header(2, "php_trie version", PHP_TRIE_EXT_EXTVER);
   php_info_print_table_header(2, "php_trie author", "Lochemem Bruno Michael <lochbm@gmail.com>");
+  php_info_print_table_header(2, "Trie available", "yes");
+  php_info_print_table_header(2, "Hat Trie available", hatTrieCheck());
   php_info_print_table_end();
 }
 /* }}} */
