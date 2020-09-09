@@ -7,19 +7,19 @@ $trie['foo'] = 'FOO';
 $trie['bar'] = 'BAR';
 $trie['baz'] = 'BAZ';
 
-var_dump(
-  $trie
+$res = $trie
     ->map('strtolower')
     ->map('ucfirst')
-    ->toArray()
-);
+    ->toArray();
+ksort($res);
+var_dump($res);
 ?>
 --EXPECT--
 array(3) {
-  ["foo"]=>
-  string(3) "Foo"
   ["bar"]=>
   string(3) "Bar"
   ["baz"]=>
   string(3) "Baz"
+  ["foo"]=>
+  string(3) "Foo"
 }
