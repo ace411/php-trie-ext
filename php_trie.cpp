@@ -488,10 +488,17 @@ PHP_MINIT_FUNCTION(php_trie)
 }
 /* }}} */
 
+static zend_module_dep php_trie_deps[] = {
+    ZEND_MOD_REQUIRED("json")
+    ZEND_MOD_END
+};
+
 /* {{{ php_trie_module_entry
  */
 zend_module_entry php_trie_module_entry = {
-    STANDARD_MODULE_HEADER,
+    STANDARD_MODULE_HEADER_EX,
+    NULL,
+    php_trie_deps,
     "php_trie",                          /* Extension name */
     trie_methods,                        /* zend_function_entry */
     PHP_MINIT(php_trie),                 /* PHP_MINIT - Module initialization */
