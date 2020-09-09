@@ -13,16 +13,18 @@ $snd['baz'] = 12;
 $thd = new Trie;
 $thd['baff'] = false;
 
-var_dump($fst->merge($snd, $thd)->toArray());
+$res = $fst->merge($snd, $thd)->toArray();
+ksort($res);
+var_dump($res);
 ?>
 --EXPECT--
 array(4) {
-  ["foo"]=>
-  string(3) "foo"
-  ["baz"]=>
-  int(12)
-  ["bar"]=>
-  string(3) "bar"
   ["baff"]=>
   bool(false)
+  ["bar"]=>
+  string(3) "bar"
+  ["baz"]=>
+  int(12)
+  ["foo"]=>
+  string(3) "foo"
 }
