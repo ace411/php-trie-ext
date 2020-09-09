@@ -21,8 +21,8 @@ array(4) {
   string(3) "foo"
   ["baz"]=>
   int(12)
-  ["baff"]=>
-  bool(false)
   ["bar"]=>
   string(3) "bar"
+  ["baff"]=>
+  bool(false)
 }
