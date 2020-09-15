@@ -15,7 +15,7 @@
 #include <utility>
 #include <cstddef>
 #include <string>
-#include <hat-trie/include/tsl/htrie_map.h>
+#include <htrie_map.h>
 
 namespace trie
 {
