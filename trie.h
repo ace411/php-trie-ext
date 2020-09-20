@@ -273,6 +273,21 @@ namespace trie
   }
 
   /**
+   * @brief checks if an arbitrary prefix exists in a string
+   * 
+   * @param needle 
+   * @param haystack 
+   * @return true 
+   * @return false 
+   */
+  bool prefixCheck(std::string needle, std::string haystack)
+  {
+    std::string sub = haystack.substr(0, needle.size());
+
+    return strExists(sub, needle);
+  }
+
+  /**
    * @brief searches trie for entries that match a specified prefix
    * 
    * @param trie 
@@ -292,9 +307,9 @@ namespace trie
         std::string history = idx.second->history;
         history.shrink_to_fit();
 
-        bool prefixCheck = strExists(prefix, history);
+        bool pcheck = prefixCheck(prefix, history);
 
-        if (val.type != NodeVal::isUndefined && prefixCheck)
+        if (val.type != NodeVal::isUndefined && pcheck)
         {
           if (history.size() != 0)
           {
@@ -302,7 +317,7 @@ namespace trie
           }
         }
 
-        if (!hasChildren(idx.second) && prefixCheck)
+        if (!hasChildren(idx.second) && pcheck)
         {
           res[history] = val;
         }

@@ -12,8 +12,8 @@
  </lead>
  <date>2020-09-08</date>
  <version>
-  <release>0.1.0</release>
-  <api>0.1.0</api>
+  <release>0.1.1</release>
+  <api>0.1.1</api>
  </version>
  <stability>
   <release>stable</release>
@@ -21,7 +21,8 @@
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
-- First stable release
+- Modified module configuration 
+- Fixed bug in prefixSearch function
  </notes>
  <contents>
   <dir name="/">
@@ -49,6 +50,7 @@
    <file name="tests/trie/search.phpt" role="test" />
    <file name="tests/trie/size.phpt" role="test" />
    <file name="tests/trie/toArray.phpt" role="test" />
+   <file name="tests/trie/prefixSearch-varied.phpt" role="test" />
    <file name="tests/hat_trie/burst-threshold.phpt" role="test" />
    <file name="tests/hat_trie/countable.phpt" role="test" />
    <file name="tests/hat_trie/erase.phpt" role="test" />
