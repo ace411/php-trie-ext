@@ -72,7 +72,7 @@ namespace trie
      * @param key
      * @param val
      */
-  void insertItem(TrieNode *&trie, const char *key, NodeVal val)
+  bool insertItem(TrieNode *&trie, const char *key, NodeVal val)
   {
     if (trie == nullptr)
     {
@@ -98,6 +98,8 @@ namespace trie
     current->val = val;
     current->history = history;
     current->isLeaf = true;
+
+    return current->isLeaf;
   }
 
   /**
@@ -354,9 +356,7 @@ namespace trie
 
     bool insert(const char *key, NodeVal val)
     {
-      insertItem(trie, key, val);
-
-      return keyExists(trie, key);
+      return insertItem(trie, key, val);
     }
 
     bool check(const char *key)

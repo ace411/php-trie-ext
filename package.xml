@@ -23,6 +23,7 @@
  <notes>
 - Modified module configuration 
 - Fixed bug in prefixSearch function
+- Removed secondary iteration in Trie insert function
  </notes>
  <contents>
   <dir name="/">
