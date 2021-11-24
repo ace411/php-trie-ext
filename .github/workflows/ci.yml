@@ -16,10 +16,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
       - run: |
-        # install 'hat-trie'
         git clone https://github.com/Tessil/hat-trie.git hat_trie
-        
-        # install 'php-trie'
         phpize && ./configure --enable-php-trie --with-hattrie=$(readlink -f `pwd`/hat_trie)
         make && sudo make install
         echo "extension = php_trie.so" >> $(php -r 'echo php_ini_loaded_file();')
