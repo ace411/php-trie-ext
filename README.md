@@ -1,7 +1,5 @@
 # php_trie
 
-[![Build Status](https://travis-ci.org/ace411/php-trie-ext.svg?branch=master)](https://travis-ci.org/ace411/php-trie-ext)
-
 Trie and HAT trie data structures for PHP.
 
 ## Requirements
