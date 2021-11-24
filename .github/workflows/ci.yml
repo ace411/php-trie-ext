@@ -1,0 +1,27 @@
+name: php-trie CI
+on: [push, pull_request]
+jobs:
+  test:
+    build:
+      runs-on: ubuntu-latest
+      strategy:
+        fail-fast: false
+        matrix:
+          php: ['7.3', '7.4']
+    name: PHP ${{ matrix.php }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install PHP
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: ${{ matrix.php }}
+      - run: |
+        # install 'hat-trie'
+        git clone https://github.com/Tessil/hat-trie.git hat_trie
+        
+        # install 'php-trie'
+        phpize && ./configure --enable-php-trie --with-hattrie=$(readlink -f `pwd`/hat_trie)
+        make && sudo make install
+        echo "extension = php_trie.so" >> $(php -r 'echo php_ini_loaded_file();')
+      # run tests
+      - run: make test
