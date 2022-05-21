@@ -1,12 +1,18 @@
-/**
- * @file trie.h
- * @author Lochemem Bruno Michael (lochbm@gmail.com)
- * @brief header file containing extension's core Trie routines
- * @version 0.1.0
- * 
- * @copyright Copyright (c) 1999-2019 The PHP Group
- * 
- */
+/*
+   +----------------------------------------------------------------------+
+   | Copyright (c) The PHP Group                                          |
+   +----------------------------------------------------------------------+
+   | This source file is subject to version 3.01 of the PHP license,      |
+   | that is bundled with this package in the file LICENSE, and is        |
+   | available through the world-wide-web at the following url:           |
+   | https://www.php.net/license/3_01.txt                                 |
+   | If you did not receive a copy of the PHP license and are unable to   |
+   | obtain it through the world-wide-web, please send a note to          |
+   | license@php.net so we can mail you a copy immediately.               |
+   +----------------------------------------------------------------------+
+   | Author: Lochemem Bruno Michael                                       |
+   +----------------------------------------------------------------------+
+*/
 
 #ifndef TRIE_H
 #define TRIE_H
@@ -53,10 +59,10 @@ namespace trie
   typedef std::unordered_map<std::string, NodeVal> triemap;
 
   /**
-     * @brief creates new trie
-     *
-     * @return TrieNode*
-     */
+   * @brief creates new trie
+   *
+   * @return TrieNode*
+   */
   TrieNode *newTrie()
   {
     auto trie = new TrieNode;
@@ -66,12 +72,12 @@ namespace trie
   }
 
   /**
-     * @brief inserts item into trie
-     *
-     * @param trie
-     * @param key
-     * @param val
-     */
+   * @brief inserts item into trie
+   *
+   * @param trie
+   * @param key
+   * @param val
+   */
   void insertItem(TrieNode *&trie, const char *key, NodeVal val)
   {
     if (trie == nullptr)
@@ -101,13 +107,13 @@ namespace trie
   }
 
   /**
-     * @brief checks if key exists in trie
-     *
-     * @param trie
-     * @param key
-     * @return true
-     * @return false
-     */
+   * @brief checks if key exists in trie
+   *
+   * @param trie
+   * @param key
+   * @return true
+   * @return false
+   */
   bool keyExists(TrieNode *&trie, const char *key)
   {
     if (trie == nullptr)
@@ -132,12 +138,12 @@ namespace trie
   }
 
   /**
-     * @brief returns a trie value that corresponds to a specified key
-     *
-     * @param trie
-     * @param key
-     * @return NodeVal
-     */
+   * @brief returns a trie value that corresponds to a specified key
+   *
+   * @param trie
+   * @param key
+   * @return NodeVal
+   */
   NodeVal fetchByKey(TrieNode *&trie, const char *key)
   {
     NodeVal ret;
@@ -166,13 +172,13 @@ namespace trie
   }
 
   /**
-     * @brief deletes item from trie
-     *
-     * @param trie
-     * @param key
-     * @return true
-     * @return false
-     */
+   * @brief deletes item from trie
+   *
+   * @param trie
+   * @param key
+   * @return true
+   * @return false
+   */
   bool deleteItem(TrieNode *&trie, const char *key)
   {
     TrieNode *current = trie;
@@ -194,12 +200,12 @@ namespace trie
   }
 
   /**
-     * @brief checks if a trie node has children
-     * 
-     * @param trie 
-     * @return true 
-     * @return false 
-     */
+   * @brief checks if a trie node has children
+   *
+   * @param trie
+   * @return true
+   * @return false
+   */
   bool hasChildren(TrieNode *&trie)
   {
     for (auto idx : trie->children)
@@ -215,9 +221,9 @@ namespace trie
 
   /**
    * @brief extracts the trie's branches into key-value pairs
-   * 
-   * @param trie 
-   * @return triemap 
+   *
+   * @param trie
+   * @return triemap
    */
   triemap getPairs(TrieNode *&trie)
   {
@@ -259,11 +265,11 @@ namespace trie
 
   /**
    * @brief checks if a string exists inside another
-   * 
-   * @param needle 
-   * @param haystack 
-   * @return true 
-   * @return false 
+   *
+   * @param needle
+   * @param haystack
+   * @return true
+   * @return false
    */
   bool strExists(std::string needle, std::string haystack)
   {
@@ -274,10 +280,10 @@ namespace trie
 
   /**
    * @brief searches trie for entries that match a specified prefix
-   * 
-   * @param trie 
-   * @param prefix 
-   * @return triemap 
+   *
+   * @param trie
+   * @param prefix
+   * @return triemap
    */
   triemap prefixLookup(TrieNode *&trie, std::string prefix)
   {

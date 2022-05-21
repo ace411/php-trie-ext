@@ -1,12 +1,19 @@
-/**
- * @file php_trie.cpp
- * @author Lochemem Bruno Michael (lochbm@gmail.com)
- * @brief php_trie extension core file
- * @version 0.1.0
- * 
- * @copyright Copyright (c) 1999-2019 The PHP Group
- * 
- */
+/*
+   +----------------------------------------------------------------------+
+   | Copyright (c) The PHP Group                                          |
+   +----------------------------------------------------------------------+
+   | This source file is subject to version 3.01 of the PHP license,      |
+   | that is bundled with this package in the file LICENSE, and is        |
+   | available through the world-wide-web at the following url:           |
+   | https://www.php.net/license/3_01.txt                                 |
+   | If you did not receive a copy of the PHP license and are unable to   |
+   | obtain it through the world-wide-web, please send a note to          |
+   | license@php.net so we can mail you a copy immediately.               |
+   +----------------------------------------------------------------------+
+   | Author: Lochemem Bruno Michael                                       |
+   +----------------------------------------------------------------------+
+*/
+
 #include "common.cpp"
 
 /* {{{ proto Trie::__construct()
@@ -307,10 +314,8 @@ PHP_METHOD(HatTrie, merge)
 }
 /* }}} */
 
-#define ARGINFO_KEYONLY(key)                         \
-  ZEND_BEGIN_ARG_INFO_EX(arginfo_only##key, 0, 0, 1) \
-  ZEND_ARG_INFO(0, key)                              \
-  ZEND_END_ARG_INFO();
+ZEND_BEGIN_ARG_INFO_EX(arginfo_trieconstruct, 0, 0, 0)
+ZEND_END_ARG_INFO();
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_hatconstruct, 0, 0, 3)
 ZEND_ARG_INFO(0, burstThreshold)
@@ -325,13 +330,31 @@ ZEND_ARG_INFO(0, loadFactor)
 ZEND_ARG_INFO(0, shrink)
 ZEND_END_ARG_INFO();
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_insert, 0, 0, 2)
-ZEND_ARG_INFO(0, key)
-ZEND_ARG_INFO(0, entry)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_insert, 0, 2, IS_VOID, 0)
+ZEND_ARG_TYPE_INFO(0, key, IS_MIXED, 0)
+ZEND_ARG_TYPE_INFO(0, entry, IS_MIXED, 0)
 ZEND_END_ARG_INFO();
 
-ARGINFO_KEYONLY(key);
-ARGINFO_KEYONLY(prefix);
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_to_array, 0, 0, IS_ARRAY, 0)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_get, 0, 1, IS_MIXED, 0)
+ZEND_ARG_TYPE_INFO(0, key, IS_MIXED, 0)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_check, 0, 1, _IS_BOOL, 0)
+ZEND_ARG_TYPE_INFO(0, key, IS_MIXED, 0)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_del, 0, 1, IS_VOID, 0)
+ZEND_ARG_TYPE_INFO(0, key, IS_MIXED, 0)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_json_serialize, 0, 0, IS_MIXED, 0)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_count, 0, 0, IS_LONG, 0)
+ZEND_END_ARG_INFO();
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_onlyhash, 0, 0, 1)
 ZEND_ARG_ARRAY_INFO(0, array, 0)
@@ -346,6 +369,10 @@ ZEND_ARG_TYPE_INFO(0, func, IS_CALLABLE, 0)
 ZEND_ARG_INFO(0, accumulator)
 ZEND_END_ARG_INFO();
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_onlyprefix, 0, 0, 1)
+ZEND_ARG_INFO(0, prefix)
+ZEND_END_ARG_INFO();
+
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_merge, 0, 0, IS_ARRAY, 0)
 ZEND_ARG_VARIADIC_TYPE_INFO(0, tries, IS_OBJECT, 0)
 ZEND_END_ARG_INFO();
@@ -354,39 +381,39 @@ static const zend_function_entry hattrie_methods[] = {
     PHP_ME(HatTrie, __construct, arginfo_hatconstruct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
         PHP_ME(HatTrie, fromArray, arginfo_hatfromarray, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
             PHP_ME(HatTrie, fold, arginfo_fold, ZEND_ACC_PUBLIC)
-                PHP_ME(HatTrie, size, NULL, ZEND_ACC_PUBLIC)
+                PHP_ME(HatTrie, size, arginfo_count, ZEND_ACC_PUBLIC)
                     PHP_ME(HatTrie, filter, arginfo_onlycallable, ZEND_ACC_PUBLIC)
                         PHP_ME(HatTrie, insert, arginfo_insert, ZEND_ACC_PUBLIC)
-                            PHP_ME(HatTrie, keyExists, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                PHP_ME(HatTrie, search, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                    PHP_ME(HatTrie, erase, arginfo_onlykey, ZEND_ACC_PUBLIC)
+                            PHP_ME(HatTrie, keyExists, arginfo_check, ZEND_ACC_PUBLIC)
+                                PHP_ME(HatTrie, search, arginfo_get, ZEND_ACC_PUBLIC)
+                                    PHP_ME(HatTrie, erase, arginfo_del, ZEND_ACC_PUBLIC)
                                         PHP_ME(HatTrie, prefixSearch, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
                                             PHP_ME(HatTrie, prefixErase, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
                                                 PHP_ME(HatTrie, longestPrefix, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
                                                     PHP_ME(HatTrie, map, arginfo_onlycallable, ZEND_ACC_PUBLIC)
                                                         PHP_ME(HatTrie, offsetSet, arginfo_insert, ZEND_ACC_PUBLIC)
-                                                            PHP_ME(HatTrie, offsetGet, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                                                PHP_ME(HatTrie, offsetExists, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                                                    PHP_ME(HatTrie, offsetUnset, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                                                        PHP_ME(HatTrie, toArray, NULL, ZEND_ACC_PUBLIC)
-                                                                            PHP_ME(HatTrie, jsonSerialize, NULL, ZEND_ACC_PUBLIC)
+                                                            PHP_ME(HatTrie, offsetGet, arginfo_get, ZEND_ACC_PUBLIC)
+                                                                PHP_ME(HatTrie, offsetExists, arginfo_check, ZEND_ACC_PUBLIC)
+                                                                    PHP_ME(HatTrie, offsetUnset, arginfo_del, ZEND_ACC_PUBLIC)
+                                                                        PHP_ME(HatTrie, toArray, arginfo_to_array, ZEND_ACC_PUBLIC)
+                                                                            PHP_ME(HatTrie, jsonSerialize, arginfo_json_serialize, ZEND_ACC_PUBLIC)
                                                                                 PHP_ME(HatTrie, merge, arginfo_merge, ZEND_ACC_PUBLIC)
                                                                                     PHP_FE_END};
 
 static const zend_function_entry trie_methods[] = {
-    PHP_ME(Trie, __construct, NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+    PHP_ME(Trie, __construct, arginfo_trieconstruct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
         PHP_ME(Trie, fromArray, arginfo_onlyhash, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
             PHP_ME(Trie, insert, arginfo_insert, ZEND_ACC_PUBLIC)
-                PHP_ME(Trie, keyExists, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                    PHP_ME(Trie, search, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                        PHP_ME(Trie, erase, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                            PHP_ME(Trie, size, NULL, ZEND_ACC_PUBLIC)
+                PHP_ME(Trie, keyExists, arginfo_check, ZEND_ACC_PUBLIC)
+                    PHP_ME(Trie, search, arginfo_get, ZEND_ACC_PUBLIC)
+                        PHP_ME(Trie, erase, arginfo_del, ZEND_ACC_PUBLIC)
+                            PHP_ME(Trie, size, arginfo_count, ZEND_ACC_PUBLIC)
                                 PHP_ME(Trie, offsetSet, arginfo_insert, ZEND_ACC_PUBLIC)
-                                    PHP_ME(Trie, offsetGet, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                        PHP_ME(Trie, offsetExists, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                            PHP_ME(Trie, offsetUnset, arginfo_onlykey, ZEND_ACC_PUBLIC)
-                                                PHP_ME(Trie, toArray, NULL, ZEND_ACC_PUBLIC)
-                                                    PHP_ME(Trie, jsonSerialize, NULL, ZEND_ACC_PUBLIC)
+                                    PHP_ME(Trie, offsetGet, arginfo_get, ZEND_ACC_PUBLIC)
+                                        PHP_ME(Trie, offsetExists, arginfo_check, ZEND_ACC_PUBLIC)
+                                            PHP_ME(Trie, offsetUnset, arginfo_del, ZEND_ACC_PUBLIC)
+                                                PHP_ME(Trie, toArray, arginfo_to_array, ZEND_ACC_PUBLIC)
+                                                    PHP_ME(Trie, jsonSerialize, arginfo_json_serialize, ZEND_ACC_PUBLIC)
                                                         PHP_ME(Trie, prefixSearch, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
                                                             PHP_ME(Trie, map, arginfo_onlycallable, ZEND_ACC_PUBLIC)
                                                                 PHP_ME(Trie, filter, arginfo_onlycallable, ZEND_ACC_PUBLIC)
@@ -407,8 +434,8 @@ PHP_RINIT_FUNCTION(php_trie)
 
 /**
  * @brief check if HAT trie library is available
- * 
- * @return const char* 
+ *
+ * @return const char*
  */
 static const char *hatTrieCheck()
 {
@@ -446,7 +473,7 @@ PHP_MINIT_FUNCTION(php_trie)
   INIT_CLASS_ENTRY(exception_ce, "TrieException", NULL);
 
 #define TRIE_OBJECT_REGISTER(type, entry)                                                          \
-  type##_ce = zend_register_internal_class(&entry TSRMLS_CC);                                      \
+  type##_ce = zend_register_internal_class(&entry);                                                \
   type##_ce->create_object = type##_object_new;                                                    \
   memcpy(&type##_object_handlers, zend_get_std_object_handlers(), sizeof(type##_object_handlers)); \
   type##_object_handlers.free_obj = type##_object_free;                                            \
@@ -456,8 +483,10 @@ PHP_MINIT_FUNCTION(php_trie)
   TRIE_OBJECT_REGISTER(phptrie, ce);
   TRIE_OBJECT_REGISTER(phphattrie, hat_ce);
 
+#if ZEND_MODULE_API_NO < ZEND_API_PHP80
   phptrie_object_handlers.count_elements = phptrie_count_elements;
   phphattrie_object_handlers.count_elements = phphattrie_count_elements;
+#endif
 
   zend_declare_class_constant_bool(phphattrie_ce, "SHRINK", sizeof("SHRINK") - 1, 1);
   zend_declare_class_constant_bool(phphattrie_ce, "NO_SHRINK", sizeof("NO_SHRINK") - 1, 0);
@@ -475,14 +504,15 @@ PHP_MINIT_FUNCTION(php_trie)
       &exception_ce, spl_ce_RuntimeException);
 #else
   phptrie_exception_ce = zend_register_internal_class_ex(
-      &exception_ce, zend_exception_get_default(TSRMLS_C));
+      &exception_ce, zend_exception_get_default());
 #endif
 
-#define TRIE_IMPLEMENTS(type) \
-  zend_class_implements(type##_ce TSRMLS_CC, 2, zend_ce_arrayaccess, php_json_serializable_ce);
+  // #define TRIE_IMPLEMENTS(type) zend_class_implements(type##_ce, 2, zend_ce_arrayaccess, php_json_serializable_ce);
 
-  TRIE_IMPLEMENTS(phptrie);
-  TRIE_IMPLEMENTS(phphattrie);
+  zend_class_implements(phphattrie_ce, 2, zend_ce_arrayaccess, php_json_serializable_ce);
+  zend_class_implements(phptrie_ce, 2, zend_ce_arrayaccess, php_json_serializable_ce);
+  // TRIE_IMPLEMENTS(phptrie);
+  // TRIE_IMPLEMENTS(phphattrie);
 
   return SUCCESS;
 }
@@ -490,8 +520,7 @@ PHP_MINIT_FUNCTION(php_trie)
 
 static zend_module_dep php_trie_deps[] = {
     ZEND_MOD_REQUIRED("json")
-    ZEND_MOD_END
-};
+        ZEND_MOD_END};
 
 /* {{{ php_trie_module_entry
  */

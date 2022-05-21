@@ -1,12 +1,18 @@
-/**
- * @file common.cpp
- * @author Lochemem Bruno Michael (lochbm@gmail.com)
- * @brief file containing C++ implementations of PHP userland-destined functions
- * @version 0.1.0
- * 
- * @copyright Copyright (c) 1999-2019 The PHP Group
- * 
- */
+/*
+   +----------------------------------------------------------------------+
+   | Copyright (c) The PHP Group                                          |
+   +----------------------------------------------------------------------+
+   | This source file is subject to version 3.01 of the PHP license,      |
+   | that is bundled with this package in the file LICENSE, and is        |
+   | available through the world-wide-web at the following url:           |
+   | https://www.php.net/license/3_01.txt                                 |
+   | If you did not receive a copy of the PHP license and are unable to   |
+   | obtain it through the world-wide-web, please send a note to          |
+   | license@php.net so we can mail you a copy immediately.               |
+   +----------------------------------------------------------------------+
+   | Author: Lochemem Bruno Michael                                       |
+   +----------------------------------------------------------------------+
+*/
 
 #include "php_trie_ext.h"
 #include "trie.h"
@@ -70,14 +76,14 @@ static inline phphattrie_object *phphattrie_obj_from_obj(zend_object *obj)
 #define Z_HATOBJ_P(zv) phphattrie_obj_from_obj(Z_OBJ_P((zv)))
 
 // macro to throw TrieException
-#define TRIE_THROW(msg)                                         \
-  zend_throw_exception(phptrie_exception_ce, msg, 0 TSRMLS_CC); \
+#define TRIE_THROW(msg)                               \
+  zend_throw_exception(phptrie_exception_ce, msg, 0); \
   RETURN_NULL();
 
 // macro to create a Trie object
 #define TRIE_OBJECT_CREATE(type, entry)                                                                            \
   type##_object *intern = (type##_object *)ecalloc(1, sizeof(type##_object) + zend_object_properties_size(entry)); \
-  zend_object_std_init(&intern->std, entry TSRMLS_CC);                                                             \
+  zend_object_std_init(&intern->std, entry);                                                                       \
   object_properties_init(&intern->std, entry);                                                                     \
   intern->std.handlers = &type##_object_handlers;                                                                  \
   return &intern->std;
@@ -95,45 +101,47 @@ static inline phphattrie_object *phphattrie_obj_from_obj(zend_object *obj)
   delete obj->name;                                                         \
   zend_object_std_dtor(object);
 
+#if ZEND_MODULE_API_NO < ZEND_API_PHP80
 // macro to compute the element count
 #define TRIE_OBJECT_COUNT(name, type, zv, count)          \
   type##_object *trie = type##_obj_from_obj(Z_OBJ_P(zv)); \
   *count = trie->name->size();                            \
   return SUCCESS;
+#endif
 
 /**
  * @brief creates new phptrie object
- * 
- * @param ce  
- * @return zend_object* 
+ *
+ * @param ce
+ * @return zend_object*
  */
-zend_object *phptrie_object_new(zend_class_entry *ce TSRMLS_DC)
+zend_object *phptrie_object_new(zend_class_entry *ce)
 {
   TRIE_OBJECT_CREATE(phptrie, ce);
 }
 
 /**
  * @brief creates new phphattrie object
- * 
- * @param ce  
- * @return zend_object* 
+ *
+ * @param ce
+ * @return zend_object*
  */
-zend_object *phphattrie_object_new(zend_class_entry *ce TSRMLS_DC)
+zend_object *phphattrie_object_new(zend_class_entry *ce)
 {
   TRIE_OBJECT_CREATE(phphattrie, ce);
 }
 
 /**
  * @brief creates new Trie object from corresponding C++ object
- * 
- * @param trie 
- * @return zend_object* 
+ *
+ * @param trie
+ * @return zend_object*
  */
 zend_object *phptrie_object_new_ex(Trie *trie)
 {
   phptrie_object *obj = (phptrie_object *)ecalloc(1,
                                                   sizeof(phptrie_object) + zend_object_properties_size(phptrie_ce));
-  zend_object_std_init(&obj->std, phptrie_ce TSRMLS_CC);
+  zend_object_std_init(&obj->std, phptrie_ce);
   obj->std.handlers = &phptrie_object_handlers;
 
   obj->trie = trie;
@@ -143,11 +151,11 @@ zend_object *phptrie_object_new_ex(Trie *trie)
 
 /**
  * @brief creates new PHP HatTrie object from corresponding C++ object
- * 
- * @param trie 
- * @param lftr 
- * @param shr 
- * @return zend_object* 
+ *
+ * @param trie
+ * @param lftr
+ * @param shr
+ * @return zend_object*
  */
 zend_object *phphattrie_object_new_ex(HatTrie *trie,
                                       size_t threshold = DEFAULT_BURST_THRESHOLD,
@@ -156,7 +164,7 @@ zend_object *phphattrie_object_new_ex(HatTrie *trie,
 {
   phphattrie_object *obj = (phphattrie_object *)ecalloc(1,
                                                         sizeof(phphattrie_object) + zend_object_properties_size(phphattrie_ce));
-  zend_object_std_init(&obj->std, phphattrie_ce TSRMLS_CC);
+  zend_object_std_init(&obj->std, phphattrie_ce);
   obj->std.handlers = &phphattrie_object_handlers;
 
   obj->hat = trie;
@@ -169,8 +177,8 @@ zend_object *phphattrie_object_new_ex(HatTrie *trie,
 
 /**
  * @brief destroys phptrie object
- * 
- * @param object 
+ *
+ * @param object
  */
 static void phptrie_object_destroy(zend_object *object)
 {
@@ -179,8 +187,8 @@ static void phptrie_object_destroy(zend_object *object)
 
 /**
  * @brief destroys phphattrie object
- * 
- * @param object 
+ *
+ * @param object
  */
 static void phphattrie_object_destroy(zend_object *object)
 {
@@ -189,8 +197,8 @@ static void phphattrie_object_destroy(zend_object *object)
 
 /**
  * @brief releases the memory allocated to phptrie object
- * 
- * @param object 
+ *
+ * @param object
  */
 static void phptrie_object_free(zend_object *object)
 {
@@ -199,20 +207,21 @@ static void phptrie_object_free(zend_object *object)
 
 /**
  * @brief releases the memory allocated to phphattrie object
- * 
- * @param object 
+ *
+ * @param object
  */
 static void phphattrie_object_free(zend_object *object)
 {
   TRIE_OBJECT_FREE(hat, phphattrie, object);
 }
 
+#if ZEND_MODULE_API_NO < ZEND_API_PHP80
 /**
  * @brief allows for HatTrie object to implement Countable::count
- * 
- * @param obj 
- * @param count 
- * @return int 
+ *
+ * @param obj
+ * @param count
+ * @return int
  */
 static int phphattrie_count_elements(zval *obj, zend_long *count)
 {
@@ -221,20 +230,21 @@ static int phphattrie_count_elements(zval *obj, zend_long *count)
 
 /**
  * @brief allows for Trie object to implement Countable::count
- * 
- * @param obj 
- * @param count 
- * @return int 
+ *
+ * @param obj
+ * @param count
+ * @return int
  */
 static int phptrie_count_elements(zval *obj, zend_long *count)
 {
   TRIE_OBJECT_COUNT(trie, phptrie, obj, count);
 }
+#endif
 
 /**
  * @brief fcall cache release function for compatibility with newer and older versions of PHP
- * 
- * @param fncache 
+ *
+ * @param fncache
  */
 static void fcall_cache_release(zend_fcall_info_cache fncache)
 {
@@ -346,8 +356,8 @@ static void fcall_cache_release(zend_fcall_info_cache fncache)
 
 /**
  * @brief PHP trie/HAT trie insert function
- * 
- * @param type 
+ *
+ * @param type
  */
 static void insert(INTERNAL_FUNCTION_PARAMETERS, long type)
 {
@@ -444,8 +454,8 @@ static void insert(INTERNAL_FUNCTION_PARAMETERS, long type)
 
 /**
  * @brief PHP trie/HAT trie keyExists function
- * 
- * @param type 
+ *
+ * @param type
  */
 static void keyExists(INTERNAL_FUNCTION_PARAMETERS, long type)
 {
@@ -496,8 +506,8 @@ static void keyExists(INTERNAL_FUNCTION_PARAMETERS, long type)
 
 /**
  * @brief PHP trie/HAT trie search function
- * 
- * @param type 
+ *
+ * @param type
  */
 static void search(INTERNAL_FUNCTION_PARAMETERS, long type)
 {
@@ -556,8 +566,8 @@ static void search(INTERNAL_FUNCTION_PARAMETERS, long type)
 
 /**
  * @brief PHP trie/HAT trie delete function
- * 
- * @param type 
+ *
+ * @param type
  */
 static void keyDelete(INTERNAL_FUNCTION_PARAMETERS, long type)
 {
@@ -605,15 +615,15 @@ static void keyDelete(INTERNAL_FUNCTION_PARAMETERS, long type)
     {
       zend_throw_exception(phptrie_exception_ce,
                            "Cannot delete key",
-                           0 TSRMLS_CC);
+                           0);
     }
   }
 }
 
 /**
  * @brief PHP trie/HAT trie size function
- * 
- * @param type 
+ *
+ * @param type
  */
 static void count(INTERNAL_FUNCTION_PARAMETERS, long type)
 {
@@ -651,8 +661,8 @@ static void count(INTERNAL_FUNCTION_PARAMETERS, long type)
 
 /**
  * @brief PHP trie/HAT trie merge function
- * 
- * @param type 
+ *
+ * @param type
  */
 static void trieMerge(INTERNAL_FUNCTION_PARAMETERS, long type)
 {
@@ -775,8 +785,8 @@ static void trieMerge(INTERNAL_FUNCTION_PARAMETERS, long type)
 
 /**
  * @brief PHP trie/HAT trie object constructor
- * 
- * @param type 
+ *
+ * @param type
  */
 static void trieConstruct(INTERNAL_FUNCTION_PARAMETERS)
 {
@@ -795,7 +805,7 @@ static void trieConstruct(INTERNAL_FUNCTION_PARAMETERS)
 
 /**
  * @brief PHP trie toArray function
- * 
+ *
  */
 static void trieToArray(INTERNAL_FUNCTION_PARAMETERS)
 {
@@ -824,8 +834,8 @@ static void trieToArray(INTERNAL_FUNCTION_PARAMETERS)
 
 /**
  * @brief PHP trie fromArray static function
- * 
- * @param type 
+ *
+ * @param type
  */
 static void trieFromArray(INTERNAL_FUNCTION_PARAMETERS)
 {
@@ -864,7 +874,7 @@ static void trieFromArray(INTERNAL_FUNCTION_PARAMETERS)
 
 /**
  * @brief PHP trie prefixSearch function
- * 
+ *
  */
 static void triePrefixSearch(INTERNAL_FUNCTION_PARAMETERS)
 {
@@ -898,7 +908,7 @@ static void triePrefixSearch(INTERNAL_FUNCTION_PARAMETERS)
 
 /**
  * @brief PHP trie map function
- * 
+ *
  */
 static void trieMap(INTERNAL_FUNCTION_PARAMETERS)
 {
@@ -944,7 +954,7 @@ static void trieMap(INTERNAL_FUNCTION_PARAMETERS)
 
 /**
  * @brief PHP trie filter function
- * 
+ *
  */
 static void trieFilter(INTERNAL_FUNCTION_PARAMETERS)
 {
@@ -988,7 +998,7 @@ static void trieFilter(INTERNAL_FUNCTION_PARAMETERS)
 
 /**
  * @brief PHP HAT trie constructor
- * 
+ *
  */
 static void hatConstruct(INTERNAL_FUNCTION_PARAMETERS)
 {
@@ -1025,8 +1035,8 @@ static void hatConstruct(INTERNAL_FUNCTION_PARAMETERS)
 
 /**
  * @brief PHP HAT trie fromArray static function
- * 
- * @param type 
+ *
+ * @param type
  */
 static void hatFromArray(INTERNAL_FUNCTION_PARAMETERS)
 {
@@ -1090,7 +1100,7 @@ static void hatFromArray(INTERNAL_FUNCTION_PARAMETERS)
 
 /**
  * @brief PHP HAT trie prefixSearch function
- * 
+ *
  */
 static void hatPrefixSearch(INTERNAL_FUNCTION_PARAMETERS)
 {
@@ -1140,7 +1150,7 @@ static void hatPrefixSearch(INTERNAL_FUNCTION_PARAMETERS)
 
 /**
  * @brief PHP HAT trie toArray function
- * 
+ *
  */
 static void hatToArray(INTERNAL_FUNCTION_PARAMETERS)
 {
@@ -1171,7 +1181,7 @@ static void hatToArray(INTERNAL_FUNCTION_PARAMETERS)
 
 /**
  * @brief PHP HAT trie prefixErase function
- * 
+ *
  */
 static void hatPrefixErase(INTERNAL_FUNCTION_PARAMETERS)
 {
@@ -1218,7 +1228,7 @@ static void hatPrefixErase(INTERNAL_FUNCTION_PARAMETERS)
 
 /**
  * @brief PHP HAT trie fold function
- * 
+ *
  */
 static void hatFold(INTERNAL_FUNCTION_PARAMETERS)
 {
@@ -1282,7 +1292,7 @@ static void hatFold(INTERNAL_FUNCTION_PARAMETERS)
 
 /**
  * @brief PHP HAT trie map function
- * 
+ *
  */
 static void hatMap(INTERNAL_FUNCTION_PARAMETERS)
 {
@@ -1340,7 +1350,7 @@ static void hatMap(INTERNAL_FUNCTION_PARAMETERS)
 
 /**
  * @brief PHP HAT trie filter function
- * 
+ *
  */
 static void hatFilter(INTERNAL_FUNCTION_PARAMETERS)
 {
@@ -1393,7 +1403,7 @@ static void hatFilter(INTERNAL_FUNCTION_PARAMETERS)
 
 /**
  * @brief PHP HAT trie longestPrefix function
- * 
+ *
  */
 static void hatLongestPrefix(INTERNAL_FUNCTION_PARAMETERS)
 {

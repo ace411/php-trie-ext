@@ -15,7 +15,7 @@ $trie = HatTrie::fromArray([
   'bar' => 'bar',
 ]);
 
-echo count($trie);
+echo (float)phpversion() < 8 ? count($trie) : $trie->size();
 ?>
 --EXPECT--
 2
