@@ -330,12 +330,13 @@ ZEND_ARG_INFO(0, loadFactor)
 ZEND_ARG_INFO(0, shrink)
 ZEND_END_ARG_INFO();
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_to_array, 0, 0, IS_ARRAY, 0)
+ZEND_END_ARG_INFO();
+
+#if ZEND_MODULE_API_NO >= ZEND_API_PHP80
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_insert, 0, 2, IS_VOID, 0)
 ZEND_ARG_TYPE_INFO(0, key, IS_MIXED, 0)
 ZEND_ARG_TYPE_INFO(0, entry, IS_MIXED, 0)
-ZEND_END_ARG_INFO();
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_to_array, 0, 0, IS_ARRAY, 0)
 ZEND_END_ARG_INFO();
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_get, 0, 1, IS_MIXED, 0)
@@ -352,6 +353,16 @@ ZEND_END_ARG_INFO();
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_json_serialize, 0, 0, IS_MIXED, 0)
 ZEND_END_ARG_INFO();
+#else
+ZEND_BEGIN_ARG_INFO_EX(arginfo_insert, 0, 0, 2)
+ZEND_ARG_INFO(0, key)
+ZEND_ARG_INFO(0, entry)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_get, 0, 0, 1)
+ZEND_ARG_INFO(0, key)
+ZEND_END_ARG_INFO();
+#endif
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_count, 0, 0, IS_LONG, 0)
 ZEND_END_ARG_INFO();
@@ -381,22 +392,32 @@ static const zend_function_entry hattrie_methods[] = {
     PHP_ME(HatTrie, __construct, arginfo_hatconstruct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
         PHP_ME(HatTrie, fromArray, arginfo_hatfromarray, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
             PHP_ME(HatTrie, fold, arginfo_fold, ZEND_ACC_PUBLIC)
+#if ZEND_MODULE_API_NO >= ZEND_API_PHP80
                 PHP_ME(HatTrie, size, arginfo_count, ZEND_ACC_PUBLIC)
-                    PHP_ME(HatTrie, filter, arginfo_onlycallable, ZEND_ACC_PUBLIC)
-                        PHP_ME(HatTrie, insert, arginfo_insert, ZEND_ACC_PUBLIC)
+                    PHP_ME(HatTrie, toArray, arginfo_to_array, ZEND_ACC_PUBLIC)
+                        PHP_ME(HatTrie, jsonSerialize, arginfo_json_serialize, ZEND_ACC_PUBLIC)
                             PHP_ME(HatTrie, keyExists, arginfo_check, ZEND_ACC_PUBLIC)
-                                PHP_ME(HatTrie, search, arginfo_get, ZEND_ACC_PUBLIC)
-                                    PHP_ME(HatTrie, erase, arginfo_del, ZEND_ACC_PUBLIC)
-                                        PHP_ME(HatTrie, prefixSearch, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
-                                            PHP_ME(HatTrie, prefixErase, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
-                                                PHP_ME(HatTrie, longestPrefix, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
-                                                    PHP_ME(HatTrie, map, arginfo_onlycallable, ZEND_ACC_PUBLIC)
-                                                        PHP_ME(HatTrie, offsetSet, arginfo_insert, ZEND_ACC_PUBLIC)
-                                                            PHP_ME(HatTrie, offsetGet, arginfo_get, ZEND_ACC_PUBLIC)
-                                                                PHP_ME(HatTrie, offsetExists, arginfo_check, ZEND_ACC_PUBLIC)
-                                                                    PHP_ME(HatTrie, offsetUnset, arginfo_del, ZEND_ACC_PUBLIC)
-                                                                        PHP_ME(HatTrie, toArray, arginfo_to_array, ZEND_ACC_PUBLIC)
-                                                                            PHP_ME(HatTrie, jsonSerialize, arginfo_json_serialize, ZEND_ACC_PUBLIC)
+                                PHP_ME(HatTrie, offsetExists, arginfo_check, ZEND_ACC_PUBLIC)
+                                    PHP_ME(HatTrie, offsetUnset, arginfo_del, ZEND_ACC_PUBLIC)
+                                        PHP_ME(HatTrie, erase, arginfo_del, ZEND_ACC_PUBLIC)
+#else
+                PHP_ME(HatTrie, size, NULL, ZEND_ACC_PUBLIC)
+                    PHP_ME(HatTrie, toArray, NULL, ZEND_ACC_PUBLIC)
+                        PHP_ME(HatTrie, jsonSerialize, NULL, ZEND_ACC_PUBLIC)
+                            PHP_ME(HatTrie, erase, arginfo_get, ZEND_ACC_PUBLIC)
+                                PHP_ME(HatTrie, keyExists, arginfo_get, ZEND_ACC_PUBLIC)
+                                    PHP_ME(HatTrie, offsetExists, arginfo_get, ZEND_ACC_PUBLIC)
+                                        PHP_ME(HatTrie, offsetUnset, arginfo_get, ZEND_ACC_PUBLIC)
+#endif
+                                            PHP_ME(HatTrie, filter, arginfo_onlycallable, ZEND_ACC_PUBLIC)
+                                                PHP_ME(HatTrie, search, arginfo_get, ZEND_ACC_PUBLIC)
+                                                    PHP_ME(HatTrie, prefixSearch, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
+                                                        PHP_ME(HatTrie, prefixErase, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
+                                                            PHP_ME(HatTrie, longestPrefix, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
+                                                                PHP_ME(HatTrie, map, arginfo_onlycallable, ZEND_ACC_PUBLIC)
+                                                                    PHP_ME(HatTrie, insert, arginfo_insert, ZEND_ACC_PUBLIC)
+                                                                        PHP_ME(HatTrie, offsetSet, arginfo_insert, ZEND_ACC_PUBLIC)
+                                                                            PHP_ME(HatTrie, offsetGet, arginfo_get, ZEND_ACC_PUBLIC)
                                                                                 PHP_ME(HatTrie, merge, arginfo_merge, ZEND_ACC_PUBLIC)
                                                                                     PHP_FE_END};
 
@@ -404,16 +425,26 @@ static const zend_function_entry trie_methods[] = {
     PHP_ME(Trie, __construct, arginfo_trieconstruct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
         PHP_ME(Trie, fromArray, arginfo_onlyhash, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
             PHP_ME(Trie, insert, arginfo_insert, ZEND_ACC_PUBLIC)
-                PHP_ME(Trie, keyExists, arginfo_check, ZEND_ACC_PUBLIC)
-                    PHP_ME(Trie, search, arginfo_get, ZEND_ACC_PUBLIC)
-                        PHP_ME(Trie, erase, arginfo_del, ZEND_ACC_PUBLIC)
-                            PHP_ME(Trie, size, arginfo_count, ZEND_ACC_PUBLIC)
-                                PHP_ME(Trie, offsetSet, arginfo_insert, ZEND_ACC_PUBLIC)
-                                    PHP_ME(Trie, offsetGet, arginfo_get, ZEND_ACC_PUBLIC)
-                                        PHP_ME(Trie, offsetExists, arginfo_check, ZEND_ACC_PUBLIC)
-                                            PHP_ME(Trie, offsetUnset, arginfo_del, ZEND_ACC_PUBLIC)
-                                                PHP_ME(Trie, toArray, arginfo_to_array, ZEND_ACC_PUBLIC)
-                                                    PHP_ME(Trie, jsonSerialize, arginfo_json_serialize, ZEND_ACC_PUBLIC)
+                PHP_ME(Trie, search, arginfo_get, ZEND_ACC_PUBLIC)
+#if ZEND_MODULE_API_NO >= ZEND_API_PHP80
+                    PHP_ME(Trie, size, arginfo_count, ZEND_ACC_PUBLIC)
+                        PHP_ME(Trie, toArray, arginfo_to_array, ZEND_ACC_PUBLIC)
+                            PHP_ME(Trie, jsonSerialize, arginfo_json_serialize, ZEND_ACC_PUBLIC)
+                                PHP_ME(Trie, keyExists, arginfo_check, ZEND_ACC_PUBLIC)
+                                    PHP_ME(Trie, offsetExists, arginfo_check, ZEND_ACC_PUBLIC)
+                                        PHP_ME(Trie, offsetUnset, arginfo_del, ZEND_ACC_PUBLIC)
+                                            PHP_ME(Trie, erase, arginfo_del, ZEND_ACC_PUBLIC)
+#else
+                    PHP_ME(Trie, size, NULL, ZEND_ACC_PUBLIC)
+                        PHP_ME(Trie, toArray, NULL, ZEND_ACC_PUBLIC)
+                            PHP_ME(Trie, jsonSerialize, NULL, ZEND_ACC_PUBLIC)
+                                PHP_ME(Trie, keyExists, arginfo_get, ZEND_ACC_PUBLIC)
+                                    PHP_ME(Trie, offsetExists, arginfo_get, ZEND_ACC_PUBLIC)
+                                        PHP_ME(Trie, offsetUnset, arginfo_get, ZEND_ACC_PUBLIC)
+                                            PHP_ME(Trie, erase, arginfo_get, ZEND_ACC_PUBLIC)
+#endif
+                                                PHP_ME(Trie, offsetSet, arginfo_insert, ZEND_ACC_PUBLIC)
+                                                    PHP_ME(Trie, offsetGet, arginfo_get, ZEND_ACC_PUBLIC)
                                                         PHP_ME(Trie, prefixSearch, arginfo_onlyprefix, ZEND_ACC_PUBLIC)
                                                             PHP_ME(Trie, map, arginfo_onlycallable, ZEND_ACC_PUBLIC)
                                                                 PHP_ME(Trie, filter, arginfo_onlycallable, ZEND_ACC_PUBLIC)
