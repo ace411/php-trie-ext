@@ -14,14 +14,10 @@ jobs:
         uses: shivammathur/setup-php@master
         with:
           php-version: ${{ matrix.php }}
-      - name: Build and install php-trie
+      - name: Run tests
         run: |
           mkdir hat_trie && \
           git clone https://github.com/Tessil/hat-trie.git hat_trie && \
           phpize && ./configure --enable-php_trie --with-hattrie=$(readlink -f `pwd`/hat_trie/include/tsl) && \
-          make && sudo make install && \
-          php --ini && \
-          sudo echo "extension=php_trie" >> $(php -r 'echo php_ini_loaded_file();')
-      - name: Run tests
-        run: make test
+          make && make test
 
