@@ -30,7 +30,7 @@
 const long DEFAULT_BURST_THRESHOLD = 16384;
 const float DEFAULT_LOAD_FACTOR = 8.0f;
 
-#ifndef HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
