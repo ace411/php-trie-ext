@@ -1,6 +1,6 @@
 # php_trie
 
-[![Build Status](https://travis-ci.org/ace411/php-trie-ext.svg?branch=master)](https://travis-ci.org/ace411/php-trie-ext)
+[![php-trie CI](https://github.com/ace411/php-trie-ext/actions/workflows/ci.yml/badge.svg)](https://github.com/ace411/php-trie-ext/actions/workflows/ci.yml)
 
 Trie and HAT trie data structures for PHP.
 
@@ -21,7 +21,7 @@ $ pecl install php_trie
 To install the extension via Git, type the following in a console of your choosing:
 
 ```sh
-$ git clone https://github.com/ace411/php_trie.git <directory>
+$ git clone https://github.com/ace411/php-trie-ext.git <directory>
 $ cd <directory>
 $ phpize
 $ ./configure --enable-php_trie
