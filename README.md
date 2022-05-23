@@ -1,6 +1,6 @@
 # php_trie
 
-[![Build Status](https://travis-ci.org/ace411/php-trie-ext.svg?branch=master)](https://travis-ci.org/ace411/php-trie-ext)
+[![php-trie CI](https://github.com/ace411/php-trie-ext/actions/workflows/ci.yml/badge.svg)](https://github.com/ace411/php-trie-ext/actions/workflows/ci.yml)
 
 Trie and HAT trie data structures for PHP.
 
@@ -15,34 +15,34 @@ Trie and HAT trie data structures for PHP.
 `php-trie` is part of the PECL registry. If you intend to install the module via PECL, the following directive should suffice:
 
 ```sh
-pecl install php_trie
+$ pecl install php_trie
 ```
 
 To install the extension via Git, type the following in a console of your choosing:
 
 ```sh
-git clone https://github.com/ace411/php_trie.git <directory>
-cd <directory>
-phpize
-./configure --enable-php_trie
-make && sudo make install
+$ git clone https://github.com/ace411/php-trie-ext.git <directory>
+$ cd <directory>
+$ phpize
+$ ./configure --enable-php_trie
+$ make && sudo make install
 ```
 
-If you intend to use the HAT trie component of the module, you are going to need to install the HAT trie C++ library. The installation directives, with the said library installed become:
+If you intend to use the HAT trie component of the module, you are going to need to install the [HAT trie C++ library](https://github.com/Tessil/hat-trie). The installation directives, with the said library installed become:
 
 ```sh
-git clone https://github.com/Tessil/hat-trie.git <lib-dir>
-git clone https://github.com/ace411/php_trie.git <directory>
-cd <directory>
-phpize
-./configure --enable-php_trie --with-hattrie=<lib-dir>/include/tsl
-make && sudo make install
+$ git clone https://github.com/Tessil/hat-trie.git <lib-dir>
+$ git clone https://github.com/ace411/php_trie.git <directory>
+$ cd <directory>
+$ phpize
+$ ./configure --enable-php_trie --with-hattrie="<lib-dir>"
+$ make && sudo make install
 ```
 
 Running the tests in the `tests` directory is doable by running the following directive.
 
 ```sh
-make test
+$ make test
 ```
 
 > Do not forget to enable the extension by adding `extension=php_trie` to your `php.ini` file.
@@ -72,7 +72,7 @@ unset($trie['bar']);
 ### Trie object
 
 ```php
-class Trie implements Countable, ArrayAccess, JsonSerializable {
+class Trie implements ArrayAccess, JsonSerializable {
 
   /* Methods */
   public __construct();
@@ -115,7 +115,7 @@ class Trie implements Countable, ArrayAccess, JsonSerializable {
 ### HatTrie object
 
 ```php
-class HatTrie implements Countable, ArrayAccess, JsonSerializable {
+class HatTrie implements ArrayAccess, JsonSerializable {
 
   /* Constants */
   const bool SHRINK = true;
@@ -161,3 +161,4 @@ class HatTrie implements Countable, ArrayAccess, JsonSerializable {
 Consider buying me a coffee if you appreciate the offerings of the project and/or would like to provide more impetus for me to continue working on it.
 
 <a href="https://www.buymeacoffee.com/agiroLoki" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/lato-white.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;" ></a>
+

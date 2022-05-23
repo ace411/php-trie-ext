@@ -34,6 +34,7 @@ if test "$PHP_PHP_TRIE" != "no"; then
   PHP_REQUIRE_CXX()
   PHP_ADD_INCLUDE($HATTRIE_LIB)
 
+  PHP_ADD_EXTENSION_DEP(php_trie, json)
   
   dnl add C++11 standard library
   AC_DEFINE(HAVE_PHP_TRIE, 1, [ Have php_trie support ])

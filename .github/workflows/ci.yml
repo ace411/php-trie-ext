@@ -1,0 +1,23 @@
+name: php-trie CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.0', '8.1']
+    name: PHP ${{ matrix.php }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install PHP
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: ${{ matrix.php }}
+      - name: Run tests
+        run: |
+          mkdir hat_trie && \
+          git clone https://github.com/Tessil/hat-trie.git hat_trie && \
+          phpize && ./configure --enable-php_trie --with-hattrie=$(readlink -f `pwd`/hat_trie/include/tsl) && \
+          make && make test
+
