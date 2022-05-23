@@ -10,10 +10,10 @@
   <email>lochbm@yahoo.com</email>
   <active>yes</active>
  </lead>
- <date>2020-09-08</date>
+ <date>2022-23-05</date>
  <version>
-  <release>0.1.0</release>
-  <api>0.1.0</api>
+  <release>0.1.1</release>
+  <api>0.1.1</api>
  </version>
  <stability>
   <release>stable</release>
@@ -21,7 +21,8 @@
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
-- First stable release
+- Added support for PHP 8
+- Removed Countable interface implementation
  </notes>
  <contents>
   <dir name="/">
@@ -77,7 +78,7 @@
   <required>
    <php>
     <min>7.3.0</min>
-    <max>7.4.99</max>
+    <max>8.1.99</max>
    </php>
    <pearinstaller>
     <min>1.4.1</min>

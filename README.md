@@ -21,7 +21,7 @@ $ pecl install php_trie
 To install the extension via Git, type the following in a console of your choosing:
 
 ```sh
-$ git clone https://github.com/ace411/php_trie.git <directory>
+$ git clone https://github.com/ace411/php-trie-ext.git <directory>
 $ cd <directory>
 $ phpize
 $ ./configure --enable-php_trie
