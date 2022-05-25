@@ -1,5 +1,10 @@
 # php-trie changelog
 
+## v0.1.2
+
+- Fixed versioning inconsistencies
+- Fixed `config.h` reverse logic
+
 ## v0.1.1
 
 - Added support for PHP 8

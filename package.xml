@@ -10,10 +10,10 @@
   <email>lochbm@yahoo.com</email>
   <active>yes</active>
  </lead>
- <date>2022-05-23</date>
+ <date>2022-05-25</date>
  <version>
-  <release>0.1.1</release>
-  <api>0.1.1</api>
+  <release>0.1.2</release>
+  <api>0.1.2</api>
  </version>
  <stability>
   <release>stable</release>
@@ -21,8 +21,8 @@
  </stability>
  <license uri="http://www.php.net/license">PHP</license>
  <notes>
-- Added support for PHP 8
-- Removed Countable interface implementation
+- Fixed versioning inconsistencies
+- Fixed config.h reverse logic
  </notes>
  <contents>
   <dir name="/">
@@ -87,6 +87,22 @@
  <providesextension>php_trie</providesextension>
  <extsrcrelease />
  <changelog>
+  <release>
+    <date>2022-05-25</date>
+    <version>
+      <release>0.1.2</release>
+      <api>0.1.2</api>
+    </version>
+    <stability>
+      <release>stable</release>
+      <api>stable</api>
+    </stability>
+    <license uri="http://www.php.net/license">PHP</license>
+    <notes>
+    - Fixed versioning inconsistencies
+    - Fixed config.h reverse logic
+    </notes>
+  </release>
   <release>
     <date>2022-05-23</date>
     <version>
