@@ -18,7 +18,7 @@
 #define PHP_TRIE_EXT_H
 
 #define PHP_TRIE_EXT_EXTNAME "php_trie"
-#define PHP_TRIE_EXT_EXTVER "0.1.0"
+#define PHP_TRIE_EXT_EXTVER "0.1.2"
 
 #define IS_HATTRIE 1
 #define IS_TRIE 2
